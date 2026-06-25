@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { StoreProvider } from './store/store'
 import Toaster from './components/Toaster'
+import Chatbot from './components/Chatbot'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -12,6 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <StoreProvider>
         <App />
         <Toaster />
+        <Chatbot />
       </StoreProvider>
     </HashRouter>
   </React.StrictMode>
