@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home — Soteria Learning</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    /* ── Learner-specific layout ─────────────────────── */
+    :root {
+      --inst-bar-h:     56px;
+      --learner-nav-h:  48px;
+      --total-top:      104px;
+      --l-sidebar-w:    224px;
+      --r-panel-w:      292px;
+    }
+
+    /* ── Institution top bar ─────────────────────────── */
+    .inst-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--inst-bar-h);
+      background: var(--color-nav);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--sp-6);
+      gap: var(--sp-3);
+      z-index: 110;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .inst-bar__logo {
+      display: flex; align-items: center; gap: var(--sp-3);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .inst-bar__name {
+      font-size: var(--text-md);
+      font-weight: var(--fw-bold);
+      color: #fff;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+    .inst-bar__sep {
+      width: 1px; height: 20px;
+      background: rgba(255,255,255,0.18);
+      margin: 0 var(--sp-3);
+      flex-shrink: 0;
+    }
+    .inst-bar__program {
+      font-size: var(--text-sm);
+      color: rgba(255,255,255,0.65);
+      font-weight: var(--fw-medium);
+      white-space: nowrap;
+    }
+    .inst-bar__spacer { flex: 1; }
+    .inst-bar__actions { display: flex; align-items: center; gap: var(--sp-2); }
+
+    /* ── Learner primary nav ─────────────────────────── */
+    .learner-topnav {
+      position: fixed;
+      top: var(--inst-bar-h); left: 0; right: 0;
+      height: var(--learner-nav-h);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: stretch;
+      padding: 0 var(--sp-5);
+      z-index: 100;
+      box-shadow: var(--shadow-xs);
+    }
+    .lnav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: 0 var(--sp-4);
+      font-size: var(--text-sm);
+      font-weight: var(--fw-medium);
+      color: var(--color-text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      text-decoration: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .lnav-link svg { width: 15px; height: 15px; }
+    .lnav-link:hover { color: var(--color-text); text-decoration: none; }
+    .lnav-link.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    /* ── 3-column body ───────────────────────────────── */
+    .learner-body {
+      display: flex;
+      margin-top: var(--total-top);
+      min-height: calc(100vh - var(--total-top));
+    }
+
+    /* Left sidebar */
+    .l-sidebar {
+      width: var(--l-sidebar-w);
+      background: var(--color-nav);
+      position: fixed;
+      top: var(--total-top); left: 0; bottom: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+      padding: var(--sp-5) 0 var(--sp-4);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      z-index: 80;
+    }
+    .l-sidebar::-webkit-scrollbar { width: 3px; }
+    .l-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    .l-sidebar__user {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: 0 var(--sp-5) var(--sp-5);
+      margin-bottom: var(--sp-3);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .l-sidebar__uname { font-size: var(--text-sm); font-weight: var(--fw-semi); color: #fff; }
+    .l-sidebar__uid   { font-size: var(--text-xs); color: var(--color-nav-text-dim); }
+
+    .l-sidebar__prog-wrap {
+      padding: 0 var(--sp-5);
+      margin-bottom: var(--sp-5);
+    }
+    .l-sidebar__prog-label {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-xs); margin-bottom: 5px;
+    }
+    .l-sidebar__prog-label span { color: var(--color-nav-text-dim); }
+    .l-sidebar__prog-label strong { color: var(--color-nav-text); font-weight: var(--fw-semi); }
+
+    /* Main scroll area */
+    .l-main {
+      margin-left: var(--l-sidebar-w);
+      margin-right: var(--r-panel-w);
+      flex: 1; min-width: 0;
+    }
+    .l-main-content { padding: var(--sp-6) var(--sp-7); }
+
+    /* Right panel */
+    .r-panel {
+      width: var(--r-panel-w);
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      position: fixed;
+      top: var(--total-top); right: 0; bottom: 0;
+      overflow-y: auto;
+      padding: var(--sp-5) var(--sp-5);
+      z-index: 80;
+    }
+    .r-panel::-webkit-scrollbar { width: 3px; }
+    .r-panel::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 3px; }
+
+    .r-section-title {
+      font-size: var(--text-sm);
+      font-weight: var(--fw-semi);
+      color: var(--color-text);
+      padding-bottom: var(--sp-3);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--sp-4);
+    }
+
+    /* ── Greeting ────────────────────────────────────── */
+    .greeting { margin-bottom: var(--sp-5); }
+    .greeting__date {
+      font-size: var(--text-xs);
+      font-weight: var(--fw-semi);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-primary);
+      margin-bottom: var(--sp-1);
+    }
+    .greeting__title {
+      font-size: var(--text-2xl);
+      font-weight: var(--fw-bold);
+      color: var(--color-text);
+      letter-spacing: -0.4px;
+      margin-bottom: var(--sp-1);
+    }
+    .greeting__sub {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* ── Programme progress banner ───────────────────── */
+    .prog-banner {
+      background: linear-gradient(125deg, #1D4ED8 0%, #1E3A8A 100%);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5) var(--sp-6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-6);
+      margin-bottom: var(--sp-6);
+      position: relative;
+      overflow: hidden;
+    }
+    .prog-banner::before {
+      content: '';
+      position: absolute; top: -50px; right: -40px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.05); border-radius: 50%;
+    }
+    .prog-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; right: 80px;
+      width: 130px; height: 130px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+    }
+    .prog-banner__info { flex: 1; position: relative; z-index: 1; }
+    .prog-banner__info h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--fw-semi);
+      margin-bottom: 3px;
+    }
+    .prog-banner__info p {
+      font-size: var(--text-sm);
+      opacity: 0.75;
+      margin-bottom: var(--sp-3);
+    }
+    .prog-banner__bar {
+      height: 7px; background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-full); overflow: hidden;
+    }
+    .prog-banner__fill {
+      height: 100%; background: #fff;
+      border-radius: var(--radius-full);
+    }
+    .prog-banner__stats {
+      display: flex; gap: var(--sp-5);
+      flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .pbs { text-align: center; }
+    .pbs__val { font-size: var(--text-2xl); font-weight: var(--fw-bold); line-height: 1; margin-bottom: 3px; }
+    .pbs__lbl { font-size: var(--text-xs); opacity: 0.7; white-space: nowrap; }
+    .pbs-divider { width: 1px; background: rgba(255,255,255,0.2); align-self: stretch; }
+
+    /* ── Section heading ─────────────────────────────── */
+    .s-heading {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--sp-4);
+    }
+    .s-heading h2 { font-size: var(--text-lg); font-weight: var(--fw-semi); color: var(--color-text); }
+    .s-heading a  { font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-primary); text-decoration: none; }
+    .s-heading a:hover { text-decoration: underline; }
+
+    /* ── Learner course cards ────────────────────────── */
+    .lcourse-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--sp-4);
+      margin-bottom: var(--sp-8);
+    }
+    .lcourse-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .lcourse-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: var(--color-primary-muted);
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .lcc-cover {
+      height: 108px;
+      display: flex;
+      align-items: flex-end;
+      padding: var(--sp-3);
+      position: relative;
+      overflow: hidden;
+    }
+    .lcc-emoji {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -60%);
+      font-size: 1.9rem;
+    }
+    .lcc-type-badge {
+      position: relative; z-index: 1;
+      font-size: 10px; font-weight: var(--fw-semi);
+      color: rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.22);
+      border-radius: var(--radius-full);
+      padding: 2px 8px;
+    }
+    .lcc-status-badge {
+      position: absolute; top: var(--sp-2); right: var(--sp-2);
+      z-index: 1; font-size: 10px;
+    }
+    .lcc-body {
+      padding: var(--sp-4);
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .lcc-title {
+      font-size: var(--text-sm); font-weight: var(--fw-semi);
+      color: var(--color-text); line-height: 1.35; margin-bottom: 4px;
+    }
+    .lcc-meta {
+      font-size: var(--text-xs); color: var(--color-text-muted);
+      margin-bottom: var(--sp-3);
+    }
+    .lcc-pct {
+      font-size: var(--text-xs); font-weight: var(--fw-semi);
+      color: var(--color-text); text-align: right;
+      margin-bottom: 4px;
+    }
+
+    /* ── Continue cards ──────────────────────────────── */
+    .continue-list { display: flex; flex-direction: column; gap: var(--sp-3); margin-bottom: var(--sp-8); }
+
+    .continue-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-4) var(--sp-5);
+      display: flex; align-items: center; gap: var(--sp-4);
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .continue-card:hover {
+      border-color: var(--color-primary-muted);
+      box-shadow: var(--shadow-md);
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .cc-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .cc-info { flex: 1; min-width: 0; }
+    .cc-course { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 2px; }
+    .cc-task {
+      font-size: var(--text-sm); font-weight: var(--fw-semi); color: var(--color-text);
+      margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cc-chapter {
+      font-size: var(--text-xs); color: var(--color-text-secondary);
+      display: flex; align-items: center; gap: var(--sp-2);
+    }
+    .cc-task-type {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: var(--color-bg); border-radius: var(--radius-full);
+      padding: 2px 7px; font-size: 10px;
+    }
+    .cc-task-type svg { width: 11px; height: 11px; }
+
+    /* ── Event list ──────────────────────────────────── */
+    .event-list { display: flex; flex-direction: column; margin-bottom: var(--sp-6); }
+
+    .event-row {
+      display: flex; gap: var(--sp-3);
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .event-row:last-child { border-bottom: none; }
+
+    .event-date { width: 34px; flex-shrink: 0; text-align: center; }
+    .event-day  { font-size: var(--text-lg); font-weight: var(--fw-bold); color: var(--color-text); line-height: 1; }
+    .event-month{ font-size: 10px; text-transform: uppercase; color: var(--color-text-muted); font-weight: var(--fw-semi); letter-spacing: 0.04em; }
+
+    .event-line { width: 3px; border-radius: 3px; align-self: stretch; flex-shrink: 0; }
+    .event-line--blue   { background: var(--color-primary); }
+    .event-line--green  { background: var(--color-success); }
+    .event-line--yellow { background: var(--color-warning); }
+    .event-line--red    { background: var(--color-danger); }
+
+    .event-info { flex: 1; min-width: 0; }
+    .event-title { font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-text); margin-bottom: 2px; }
+    .event-meta  { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    .event-today {
+      font-size: 10px; font-weight: var(--fw-semi);
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+      border-radius: var(--radius-full);
+      padding: 2px 7px; align-self: flex-start; flex-shrink: 0;
+    }
+
+    /* ── Mini calendar ───────────────────────────────── */
+    .mini-cal__grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+    .mini-cal__dow {
+      text-align: center; font-size: 10px;
+      font-weight: var(--fw-semi); color: var(--color-text-muted);
+      text-transform: uppercase; padding: 4px 0;
+    }
+    .mini-cal__day {
+      text-align: center; font-size: var(--text-xs);
+      padding: 5px 3px; border-radius: var(--radius-sm);
+      cursor: pointer; color: var(--color-text);
+      transition: var(--transition); line-height: 1.3;
+    }
+    .mini-cal__day:hover { background: var(--color-bg); }
+    .mini-cal__day--today {
+      background: var(--color-primary); color: #fff; font-weight: var(--fw-semi);
+    }
+    .mini-cal__day--today:hover { background: var(--color-primary-hover); }
+    .mini-cal__day--has-event { position: relative; }
+    .mini-cal__day--has-event::after {
+      content: ''; display: block;
+      width: 4px; height: 4px;
+      background: var(--color-warning);
+      border-radius: 50%; margin: 2px auto 0;
+    }
+    .mini-cal__day--today.mini-cal__day--has-event::after { background: rgba(255,255,255,0.75); }
+    .mini-cal__day--other { color: var(--color-text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════ INSTITUTION BAR ════════════ -->
+<div class="inst-bar">
+  <a href="../index.html" class="inst-bar__logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+  </a>
+  <span class="inst-bar__name">Nexcorp University</span>
+  <div class="inst-bar__sep"></div>
+  <span class="inst-bar__program">BSc In Actuarial Science</span>
+  <div class="inst-bar__spacer"></div>
+  <div class="inst-bar__actions">
+    <button class="topbar-icon-btn" data-tooltip="Help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </button>
+    <button class="topbar-icon-btn" data-tooltip="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="badge-dot"></span>
+    </button>
+    <div class="topbar__divider"></div>
+    <div class="user-avatar" title="Amara Asante">AA</div>
+  </div>
+</div>
+
+<!-- ════════════ LEARNER NAV BAR ════════════ -->
+<nav class="learner-topnav">
+  <a href="learner-home.html" class="lnav-link active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    Home
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+    </svg>
+    Courses
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    Calendar
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+    Library
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+    Profile
+  </a>
+</nav>
+
+<!-- ════════════ BODY ════════════ -->
+<div class="learner-body">
+
+  <!-- ─── LEFT SIDEBAR ─── -->
+  <aside class="l-sidebar">
+
+    <div class="l-sidebar__user">
+      <div class="avatar avatar-md avatar-blue">AA</div>
+      <div>
+        <div class="l-sidebar__uname">Amara Asante</div>
+        <div class="l-sidebar__uid">NXU/ACT/2023/041</div>
+      </div>
+    </div>
+
+    <div class="l-sidebar__prog-wrap">
+      <div class="l-sidebar__prog-label">
+        <span>Programme Progress</span>
+        <strong>46%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:46%"></div></div>
+    </div>
+
+    <div class="sidebar__section">
+      <a href="learner-home.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        My Activity
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+        Programme
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        Courses
+        <span class="nav-link__badge">6</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Resources
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        Assessments
+        <span class="nav-link__badge" style="background:#D97706;">2</span>
+      </a>
+    </div>
+
+    <div class="sidebar__section">
+      <div class="sidebar__label">Other</div>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+        Minor Courses
+        <span class="nav-link__badge">2</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        Other Programmes
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ─── MAIN CONTENT ─── -->
+  <main class="l-main">
+    <div class="l-main-content">
+
+      <!-- Greeting -->
+      <div class="greeting">
+        <div class="greeting__date">Thursday, 18 June 2026</div>
+        <div class="greeting__title">Good morning, Amara 👋</div>
+        <div class="greeting__sub">You have 2 pending assessments and a lecture at 10:00 AM today.</div>
+      </div>
+
+      <!-- Programme progress banner -->
+      <div class="prog-banner">
+        <div class="prog-banner__info">
+          <h3>BSc In Actuarial Science — Year 2, Semester 1</h3>
+          <p>4 of 6 major courses in progress &nbsp;·&nbsp; 1 completed this semester</p>
+          <div class="prog-banner__bar">
+            <div class="prog-banner__fill" style="width:46%"></div>
+          </div>
+        </div>
+        <div class="prog-banner__stats">
+          <div class="pbs-divider"></div>
+          <div class="pbs"><div class="pbs__val">46%</div><div class="pbs__lbl">Overall</div></div>
+          <div class="pbs-divider"></div>
+          <div class="pbs"><div class="pbs__val">1</div><div class="pbs__lbl">Completed</div></div>
+          <div class="pbs-divider"></div>
+          <div class="pbs"><div class="pbs__val">2</div><div class="pbs__lbl">Due Soon</div></div>
+        </div>
+      </div>
+
+      <!-- My Courses -->
+      <div class="s-heading">
+        <h2>My Courses &mdash; Major</h2>
+        <a href="#">View all</a>
+      </div>
+
+      <div class="lcourse-grid">
+
+        <!-- Mathematical Methods I -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--blue">
+            <span class="lcc-emoji">📐</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-blue">In Progress</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Mathematical Methods I</div>
+            <div class="lcc-meta">8 chapters &nbsp;·&nbsp; 42 tasks</div>
+            <div class="lcc-pct">68%</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
+          </div>
+        </a>
+
+        <!-- Probability & Statistics -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--purple">
+            <span class="lcc-emoji">📊</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-green">Complete</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Probability &amp; Statistics</div>
+            <div class="lcc-meta">6 chapters &nbsp;·&nbsp; 34 tasks</div>
+            <div class="lcc-pct">100%</div>
+            <div class="progress-bar"><div class="progress-fill progress-fill--success" style="width:100%"></div></div>
+          </div>
+        </a>
+
+        <!-- Financial Mathematics -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--green">
+            <span class="lcc-emoji">💰</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-blue">In Progress</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Financial Mathematics</div>
+            <div class="lcc-meta">7 chapters &nbsp;·&nbsp; 38 tasks</div>
+            <div class="lcc-pct">23%</div>
+            <div class="progress-bar"><div class="progress-fill progress-fill--warning" style="width:23%"></div></div>
+          </div>
+        </a>
+
+        <!-- Economics for Actuaries -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--teal">
+            <span class="lcc-emoji">📈</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-blue">In Progress</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Economics for Actuaries</div>
+            <div class="lcc-meta">5 chapters &nbsp;·&nbsp; 28 tasks</div>
+            <div class="lcc-pct">45%</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+          </div>
+        </a>
+
+        <!-- Life Contingencies -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--orange">
+            <span class="lcc-emoji">🧮</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-gray">Not Started</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Life Contingencies</div>
+            <div class="lcc-meta">9 chapters &nbsp;·&nbsp; 51 tasks</div>
+            <div class="lcc-pct">0%</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+        </a>
+
+        <!-- Stochastic Processes -->
+        <a href="#" class="lcourse-card">
+          <div class="lcc-cover course-card__cover--rose">
+            <span class="lcc-emoji">🔢</span>
+            <span class="lcc-type-badge">Core</span>
+            <span class="lcc-status-badge"><span class="badge badge-gray">Not Started</span></span>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-title">Stochastic Processes</div>
+            <div class="lcc-meta">7 chapters &nbsp;·&nbsp; 39 tasks</div>
+            <div class="lcc-pct">0%</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+        </a>
+
+      </div><!-- /.lcourse-grid -->
+
+      <!-- Continue Where You Left Off -->
+      <div class="s-heading"><h2>Continue Where You Left Off</h2></div>
+
+      <div class="continue-list">
+
+        <a href="#" class="continue-card">
+          <div class="cc-icon" style="background:var(--blue-50);">📐</div>
+          <div class="cc-info">
+            <div class="cc-course">Mathematical Methods I</div>
+            <div class="cc-task">Introduction to Ordinary Differential Equations</div>
+            <div class="cc-chapter">
+              Ch 3: Differential Equations
+              <span class="cc-task-type">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Video &nbsp;·&nbsp; 18 min
+              </span>
+            </div>
+          </div>
+          <div style="flex-shrink:0;">
+            <button class="btn btn-primary btn-sm">Continue</button>
+          </div>
+        </a>
+
+        <a href="#" class="continue-card">
+          <div class="cc-icon" style="background:#F0FDF4;">💰</div>
+          <div class="cc-info">
+            <div class="cc-course">Financial Mathematics</div>
+            <div class="cc-task">Time Value of Money — Practice Problems</div>
+            <div class="cc-chapter">
+              Ch 2: Interest Rate Theory
+              <span class="cc-task-type">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Exercise &nbsp;·&nbsp; 12 questions
+              </span>
+            </div>
+          </div>
+          <div style="flex-shrink:0;">
+            <button class="btn btn-primary btn-sm">Continue</button>
+          </div>
+        </a>
+
+        <a href="#" class="continue-card">
+          <div class="cc-icon" style="background:#F0FDFA;">📈</div>
+          <div class="cc-info">
+            <div class="cc-course">Economics for Actuaries</div>
+            <div class="cc-task">Macroeconomic Indicators &amp; Insurance Markets</div>
+            <div class="cc-chapter">
+              Ch 3: Market Structures
+              <span class="cc-task-type">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Notes &nbsp;·&nbsp; 8 min read
+              </span>
+            </div>
+          </div>
+          <div style="flex-shrink:0;">
+            <button class="btn btn-secondary btn-sm">Review</button>
+          </div>
+        </a>
+
+      </div><!-- /.continue-list -->
+
+    </div><!-- /.l-main-content -->
+  </main>
+
+  <!-- ─── RIGHT PANEL ─── -->
+  <aside class="r-panel">
+
+    <div class="r-section-title">Upcoming Events</div>
+
+    <div class="event-list">
+
+      <div class="event-row">
+        <div class="event-date">
+          <div class="event-day">18</div>
+          <div class="event-month">Jun</div>
+        </div>
+        <div class="event-line event-line--blue"></div>
+        <div class="event-info">
+          <div class="event-title">Financial Mathematics Lecture</div>
+          <div class="event-meta">10:00 AM &nbsp;·&nbsp; Room 204, Block B</div>
+        </div>
+        <span class="event-today">Today</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date">
+          <div class="event-day">19</div>
+          <div class="event-month">Jun</div>
+        </div>
+        <div class="event-line event-line--green"></div>
+        <div class="event-info">
+          <div class="event-title">Probability &amp; Stats Tutorial</div>
+          <div class="event-meta">14:00 &nbsp;·&nbsp; Online (Zoom)</div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date">
+          <div class="event-day">20</div>
+          <div class="event-month">Jun</div>
+        </div>
+        <div class="event-line event-line--yellow"></div>
+        <div class="event-info">
+          <div class="event-title">Mathematical Methods Assignment Due</div>
+          <div class="event-meta">11:59 PM &nbsp;·&nbsp; Online Submission</div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date">
+          <div class="event-day">25</div>
+          <div class="event-month">Jun</div>
+        </div>
+        <div class="event-line event-line--red"></div>
+        <div class="event-info">
+          <div class="event-title">Mid-Semester Exam — Economics</div>
+          <div class="event-meta">09:00 AM &nbsp;·&nbsp; Exam Hall 1</div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date">
+          <div class="event-day">30</div>
+          <div class="event-month">Jun</div>
+        </div>
+        <div class="event-line event-line--yellow"></div>
+        <div class="event-info">
+          <div class="event-title">Stochastic Processes — Quiz 1</div>
+          <div class="event-meta">Online &nbsp;·&nbsp; 45 minutes</div>
+        </div>
+      </div>
+
+    </div><!-- /.event-list -->
+
+    <!-- Mini Calendar -->
+    <div class="r-section-title" style="margin-top:var(--sp-2);">June 2026</div>
+    <div class="mini-cal__grid" id="miniCal">
+      <!-- Rendered by JS -->
+    </div>
+
+  </aside>
+
+</div><!-- /.learner-body -->
+
+<script src="../js/main.js"></script>
+<script>
+  /* ── Mini calendar renderer ───────────────────────────── */
+  (function () {
+    const eventDays = new Set([18, 19, 20, 25, 30]);
+    const today = 18;
+    const dows = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    const grid = document.getElementById('miniCal');
+    if (!grid) return;
+
+    dows.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'mini-cal__dow';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    // June 2026 starts on Monday (index 0)
+    for (let d = 1; d <= 30; d++) {
+      const el = document.createElement('div');
+      const classes = ['mini-cal__day'];
+      if (d === today)           classes.push('mini-cal__day--today');
+      if (eventDays.has(d))      classes.push('mini-cal__day--has-event');
+      el.className = classes.join(' ');
+      el.textContent = d;
+      grid.appendChild(el);
+    }
+  })();
+</script>
+
+</body>
+</html>

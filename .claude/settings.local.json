@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(pkill -f vite)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(taskkill //F //PID 7072)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -s -o /dev/null -w \"main.jsx: %{http_code}\\\\n\" http://localhost:5173/src/main.jsx)",
+      "Bash(curl -s -o /dev/null -w \"App.jsx: %{http_code}\\\\n\" http://localhost:5173/src/App.jsx)",
+      "Bash(curl -s -o /dev/null -w \"SuperAdmin: %{http_code}\\\\n\" http://localhost:5173/src/pages/SuperAdmin.jsx)"
+    ]
+  }
+}

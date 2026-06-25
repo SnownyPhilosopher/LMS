@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mathematical Methods I — Soteria Learning</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    /* ── Learner layout (shared with home) ───────────── */
+    :root {
+      --inst-bar-h:   56px;
+      --learner-nav-h:48px;
+      --total-top:    104px;
+      --l-sidebar-w:  224px;
+    }
+
+    /* Institution bar */
+    .inst-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--inst-bar-h);
+      background: var(--color-nav);
+      display: flex; align-items: center;
+      padding: 0 var(--sp-6); gap: var(--sp-3);
+      z-index: 110;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .inst-bar__logo { display: flex; align-items: center; gap: var(--sp-3); text-decoration: none; flex-shrink: 0; }
+    .inst-bar__name { font-size: var(--text-md); font-weight: var(--fw-bold); color: #fff; letter-spacing: -0.2px; white-space: nowrap; }
+    .inst-bar__sep  { width: 1px; height: 20px; background: rgba(255,255,255,0.18); margin: 0 var(--sp-3); flex-shrink: 0; }
+    .inst-bar__program { font-size: var(--text-sm); color: rgba(255,255,255,0.65); font-weight: var(--fw-medium); white-space: nowrap; }
+    .inst-bar__spacer { flex: 1; }
+    .inst-bar__actions { display: flex; align-items: center; gap: var(--sp-2); }
+
+    /* Learner nav bar */
+    .learner-topnav {
+      position: fixed; top: var(--inst-bar-h); left: 0; right: 0;
+      height: var(--learner-nav-h);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex; align-items: stretch;
+      padding: 0 var(--sp-5); z-index: 100;
+      box-shadow: var(--shadow-xs);
+    }
+    .lnav-link {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      padding: 0 var(--sp-4); font-size: var(--text-sm); font-weight: var(--fw-medium);
+      color: var(--color-text-secondary);
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      text-decoration: none; transition: var(--transition); white-space: nowrap;
+    }
+    .lnav-link svg { width: 15px; height: 15px; }
+    .lnav-link:hover { color: var(--color-text); text-decoration: none; }
+    .lnav-link.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+    /* Body */
+    .learner-body { display: flex; margin-top: var(--total-top); min-height: calc(100vh - var(--total-top)); }
+
+    /* Left sidebar */
+    .l-sidebar {
+      width: var(--l-sidebar-w);
+      background: var(--color-nav);
+      position: fixed; top: var(--total-top); left: 0; bottom: 0;
+      overflow-y: auto; display: flex; flex-direction: column;
+      padding: var(--sp-5) 0 var(--sp-4);
+      border-right: 1px solid rgba(255,255,255,0.05); z-index: 80;
+    }
+    .l-sidebar::-webkit-scrollbar { width: 3px; }
+    .l-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    .l-sidebar__user { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-5) var(--sp-5); margin-bottom: var(--sp-3); border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .l-sidebar__uname { font-size: var(--text-sm); font-weight: var(--fw-semi); color: #fff; }
+    .l-sidebar__uid   { font-size: var(--text-xs); color: var(--color-nav-text-dim); }
+    .l-sidebar__prog-wrap { padding: 0 var(--sp-5); margin-bottom: var(--sp-5); }
+    .l-sidebar__prog-label { display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 5px; }
+    .l-sidebar__prog-label span   { color: var(--color-nav-text-dim); }
+    .l-sidebar__prog-label strong { color: var(--color-nav-text); font-weight: var(--fw-semi); }
+
+    /* Main area (full width minus left sidebar) */
+    .l-main { margin-left: var(--l-sidebar-w); flex: 1; min-width: 0; }
+
+    /* ── Course Banner ────────────────────────────────── */
+    .course-banner {
+      background: linear-gradient(125deg, #1D4ED8 0%, #0F172A 100%);
+      padding: var(--sp-8) var(--sp-8);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--sp-8);
+      position: relative;
+      overflow: hidden;
+    }
+    .course-banner::before {
+      content: '';
+      position: absolute; top: -60px; left: 180px;
+      width: 260px; height: 260px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+      pointer-events: none;
+    }
+    .course-banner::after {
+      content: '';
+      position: absolute; bottom: -80px; right: 200px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.03); border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Banner left */
+    .banner-left { flex: 1; min-width: 0; position: relative; z-index: 1; }
+    .banner-breadcrumb {
+      display: flex; align-items: center; gap: var(--sp-2);
+      font-size: var(--text-xs); color: rgba(255,255,255,0.5);
+      margin-bottom: var(--sp-4);
+    }
+    .banner-breadcrumb a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    .banner-breadcrumb a:hover { color: rgba(255,255,255,0.8); }
+    .banner-breadcrumb svg { width: 12px; height: 12px; }
+
+    .banner-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.1); border-radius: var(--radius-full);
+      padding: 3px 10px; font-size: var(--text-xs); font-weight: var(--fw-semi);
+      color: rgba(255,255,255,0.8); margin-bottom: var(--sp-3);
+    }
+
+    .banner-title {
+      font-size: var(--text-3xl); font-weight: var(--fw-bold);
+      color: #fff; letter-spacing: -0.5px; line-height: 1.2;
+      margin-bottom: var(--sp-5);
+    }
+
+    .banner-actions { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+
+    .btn-continue {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      background: #fff; color: var(--color-primary);
+      border: none; border-radius: var(--radius);
+      height: 40px; padding: 0 var(--sp-6);
+      font-size: var(--text-sm); font-weight: var(--fw-semi);
+      cursor: pointer; transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-continue svg { width: 14px; height: 14px; }
+    .btn-continue:hover { background: #F0F9FF; text-decoration: none; color: var(--color-primary-hover); }
+
+    .banner-date {
+      font-size: var(--text-sm); color: rgba(255,255,255,0.55);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .banner-date svg { width: 13px; height: 13px; }
+
+    /* Banner right */
+    .banner-right {
+      flex-shrink: 0; width: 280px;
+      position: relative; z-index: 1;
+    }
+
+    .live-event-card {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-4);
+      backdrop-filter: blur(4px);
+    }
+    .live-event-card__header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--sp-3);
+    }
+    .live-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #EF4444; color: #fff;
+      border-radius: var(--radius-full); padding: 3px 9px;
+      font-size: 11px; font-weight: var(--fw-semi);
+    }
+    .live-pill__dot {
+      width: 6px; height: 6px; background: #fff;
+      border-radius: 50%; animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.7); }
+    }
+    .live-event-card__time { font-size: var(--text-xs); color: rgba(255,255,255,0.5); }
+    .live-event-card__title { font-size: var(--text-md); font-weight: var(--fw-semi); color: #fff; margin-bottom: 4px; }
+    .live-event-card__meta  { font-size: var(--text-xs); color: rgba(255,255,255,0.55); margin-bottom: var(--sp-3); }
+    .btn-join {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      width: 100%; justify-content: center;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius); color: #fff;
+      height: 34px; font-size: var(--text-sm); font-weight: var(--fw-medium);
+      cursor: pointer; transition: var(--transition);
+    }
+    .btn-join:hover { background: rgba(255,255,255,0.25); }
+    .btn-join svg { width: 14px; height: 14px; }
+
+    .banner-progress { }
+    .banner-progress__label {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-xs); color: rgba(255,255,255,0.6);
+      margin-bottom: 6px;
+    }
+    .banner-progress__label strong { color: #fff; font-weight: var(--fw-semi); }
+    .banner-progress__bar {
+      height: 8px; background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-full); overflow: hidden;
+    }
+    .banner-progress__fill {
+      height: 100%; background: #fff;
+      border-radius: var(--radius-full);
+    }
+    .banner-progress__stats {
+      display: flex; gap: var(--sp-4); margin-top: var(--sp-3);
+    }
+    .bps { font-size: var(--text-xs); color: rgba(255,255,255,0.55); }
+    .bps strong { display: block; color: #fff; font-weight: var(--fw-semi); font-size: var(--text-sm); }
+
+    /* ── Body content area ───────────────────────────── */
+    .course-body {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-6);
+      padding: var(--sp-7) var(--sp-8);
+    }
+
+    /* ── Left: description + chapters ────────────────── */
+    .course-main { flex: 1; min-width: 0; }
+
+    .course-desc {
+      font-size: var(--text-base);
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--sp-8);
+      max-width: 680px;
+    }
+
+    .chapters-heading {
+      font-size: var(--text-xl); font-weight: var(--fw-semi);
+      color: var(--color-text); margin-bottom: var(--sp-5);
+    }
+
+    /* ── Chapter card ────────────────────────────────── */
+    .chapter-list { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+    .chapter-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .chapter-card:hover { box-shadow: var(--shadow-md); }
+    .chapter-card.is-active { border-color: var(--color-primary-muted); }
+
+    .chapter-header {
+      display: flex; align-items: flex-start;
+      gap: var(--sp-5); padding: var(--sp-5) var(--sp-5);
+    }
+
+    /* Left part of chapter header */
+    .chapter-info { flex: 1; min-width: 0; }
+    .chapter-num-row {
+      display: flex; align-items: center; gap: var(--sp-3);
+      margin-bottom: var(--sp-2);
+    }
+    .chapter-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-xs); font-weight: var(--fw-bold);
+      flex-shrink: 0;
+    }
+    .chapter-num--done   { background: var(--color-success); color: #fff; }
+    .chapter-num--active { background: var(--color-primary); color: #fff; }
+    .chapter-num--locked { background: var(--color-bg); color: var(--color-text-muted); border: 1px solid var(--color-border); }
+
+    .chapter-name {
+      font-size: var(--text-md); font-weight: var(--fw-semi);
+      color: var(--color-text);
+    }
+    .chapter-desc {
+      font-size: var(--text-sm); color: var(--color-text-secondary);
+      line-height: 1.6; margin-bottom: var(--sp-4);
+      padding-left: 40px; /* align with name */
+    }
+    .chapter-footer-row {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding-left: 40px;
+    }
+    .btn-expand {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      height: 32px; padding: 0 var(--sp-4);
+      font-size: var(--text-xs); font-weight: var(--fw-medium);
+      color: var(--color-text-secondary);
+      cursor: pointer; transition: var(--transition);
+    }
+    .btn-expand svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
+    .btn-expand:hover { border-color: var(--color-primary-muted); color: var(--color-primary); background: var(--color-primary-light); }
+    .btn-expand.open svg { transform: rotate(180deg); }
+
+    .chapter-task-count {
+      font-size: var(--text-xs); color: var(--color-text-muted);
+    }
+
+    /* Right part of chapter header */
+    .chapter-right {
+      flex-shrink: 0; width: 180px;
+      display: flex; flex-direction: column;
+      align-items: flex-end; gap: var(--sp-3);
+    }
+    .chapter-completion { width: 100%; }
+    .ch-comp-label {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-xs); color: var(--color-text-muted);
+      margin-bottom: 5px;
+    }
+    .ch-comp-label strong { color: var(--color-text); font-weight: var(--fw-semi); }
+
+    .btn-ch-continue {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--color-primary); color: #fff;
+      border: none; border-radius: var(--radius);
+      height: 34px; padding: 0 var(--sp-4);
+      font-size: var(--text-xs); font-weight: var(--fw-semi);
+      cursor: pointer; transition: var(--transition);
+      text-decoration: none; white-space: nowrap;
+    }
+    .btn-ch-continue svg { width: 13px; height: 13px; }
+    .btn-ch-continue:hover { background: var(--color-primary-hover); text-decoration: none; color: #fff; }
+    .btn-ch-continue--ghost {
+      background: transparent; color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+    }
+    .btn-ch-continue--ghost:hover { background: var(--color-bg); color: var(--color-text); }
+    .btn-ch-continue--start {
+      background: var(--color-success);
+    }
+    .btn-ch-continue--start:hover { background: #047857; }
+
+    /* ── Task list (revealed on expand) ──────────────── */
+    .task-list {
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg);
+      display: none;
+    }
+    .task-list.open { display: block; }
+
+    .task-row {
+      display: flex; align-items: center; gap: var(--sp-4);
+      padding: 12px var(--sp-5);
+      border-bottom: 1px solid var(--color-border);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .task-row:last-child { border-bottom: none; }
+    .task-row:hover { background: #F8FAFF; }
+    .task-row.task-current { background: var(--color-primary-light); border-left: 3px solid var(--color-primary); }
+    .task-row.task-locked  { opacity: 0.5; cursor: default; }
+
+    .task-type-icon {
+      width: 32px; height: 32px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .task-type-icon svg { width: 15px; height: 15px; }
+    .task-type-icon--video   { background: #DBEAFE; color: #1D4ED8; }
+    .task-type-icon--notes   { background: #F0FDF4; color: #059669; }
+    .task-type-icon--exercise{ background: #FEF3C7; color: #D97706; }
+    .task-type-icon--test    { background: #FEE2E2; color: #DC2626; }
+    .task-type-icon--class   { background: #EDE9FE; color: #6D28D9; }
+
+    .task-info { flex: 1; min-width: 0; }
+    .task-name {
+      font-size: var(--text-sm); font-weight: var(--fw-medium);
+      color: var(--color-text); margin-bottom: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .task-meta { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    .task-status { flex-shrink: 0; }
+    .task-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .task-check--done { background: var(--color-success); }
+    .task-check--done svg { width: 11px; height: 11px; color: #fff; }
+    .task-check--current { background: var(--color-primary); }
+    .task-check--current svg { width: 11px; height: 11px; color: #fff; }
+    .task-check--empty { background: transparent; border: 2px solid var(--color-border-strong); }
+    .task-check--lock { background: transparent; }
+    .task-check--lock svg { width: 13px; height: 13px; color: var(--color-text-muted); }
+
+    /* ── Right sidebar (in page content) ─────────────── */
+    .course-sidebar {
+      width: 260px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: var(--sp-5);
+    }
+
+    .cs-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .cs-card-header {
+      padding: var(--sp-4) var(--sp-5);
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm); font-weight: var(--fw-semi);
+      color: var(--color-text);
+      display: flex; align-items: center; gap: var(--sp-2);
+    }
+    .cs-card-header svg { width: 15px; height: 15px; color: var(--color-text-muted); }
+    .cs-card-body { padding: var(--sp-4) var(--sp-5); }
+
+    /* Programme card */
+    .prog-label { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 3px; }
+    .prog-name  { font-size: var(--text-sm); font-weight: var(--fw-semi); color: var(--color-text); margin-bottom: var(--sp-3); line-height: 1.3; }
+    .prog-meta  { font-size: var(--text-xs); color: var(--color-text-secondary); }
+    .prog-stats {
+      display: flex; gap: var(--sp-4);
+      background: var(--color-bg); border-radius: var(--radius);
+      padding: var(--sp-3) var(--sp-4); margin-top: var(--sp-3);
+    }
+    .prog-stat { text-align: center; flex: 1; }
+    .prog-stat__val { font-size: var(--text-md); font-weight: var(--fw-bold); color: var(--color-text); }
+    .prog-stat__lbl { font-size: 10px; color: var(--color-text-muted); white-space: nowrap; }
+
+    /* Resources */
+    .resource-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .resource-item {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: var(--sp-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      text-decoration: none; color: var(--color-text);
+      transition: var(--transition);
+      font-size: var(--text-sm);
+    }
+    .resource-item:hover { border-color: var(--color-primary-muted); background: var(--color-primary-light); text-decoration: none; color: var(--color-text); }
+    .resource-icon {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.9rem;
+    }
+    .resource-icon--pdf    { background: #FEE2E2; }
+    .resource-icon--link   { background: #DBEAFE; }
+    .resource-icon--folder { background: #FEF3C7; }
+    .resource-info { flex: 1; min-width: 0; }
+    .resource-name { font-size: var(--text-xs); font-weight: var(--fw-medium); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .resource-type { font-size: 10px; color: var(--color-text-muted); }
+
+    /* Teacher */
+    .teacher-card {
+      display: flex; align-items: center; gap: var(--sp-3);
+      margin-bottom: var(--sp-4);
+    }
+    .teacher-name   { font-size: var(--text-sm); font-weight: var(--fw-semi); color: var(--color-text); }
+    .teacher-dept   { font-size: var(--text-xs); color: var(--color-text-muted); }
+    .teacher-stats  { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+    .teacher-stat   { font-size: var(--text-xs); color: var(--color-text-secondary); display: flex; align-items: center; gap: 4px; }
+    .teacher-stat svg { width: 12px; height: 12px; }
+    .btn-message {
+      display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+      width: 100%; height: 34px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius); background: var(--color-surface);
+      font-size: var(--text-xs); font-weight: var(--fw-medium);
+      color: var(--color-text-secondary); cursor: pointer; transition: var(--transition);
+      margin-top: var(--sp-4);
+    }
+    .btn-message svg { width: 13px; height: 13px; }
+    .btn-message:hover { border-color: var(--color-primary-muted); color: var(--color-primary); background: var(--color-primary-light); }
+  </style>
+</head>
+<body>
+
+<!-- ════════ INSTITUTION BAR ════════ -->
+<div class="inst-bar">
+  <a href="../index.html" class="inst-bar__logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+  </a>
+  <span class="inst-bar__name">Nexcorp University</span>
+  <div class="inst-bar__sep"></div>
+  <span class="inst-bar__program">BSc In Actuarial Science</span>
+  <div class="inst-bar__spacer"></div>
+  <div class="inst-bar__actions">
+    <button class="topbar-icon-btn" data-tooltip="Help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </button>
+    <button class="topbar-icon-btn" data-tooltip="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="badge-dot"></span>
+    </button>
+    <div class="topbar__divider"></div>
+    <div class="user-avatar" title="Amara Asante">AA</div>
+  </div>
+</div>
+
+<!-- ════════ LEARNER NAV BAR ════════ -->
+<nav class="learner-topnav">
+  <a href="learner-home.html" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    Home
+  </a>
+  <a href="learner-courses.html" class="lnav-link active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+    </svg>
+    Courses
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    Calendar
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+    Library
+  </a>
+  <a href="#" class="lnav-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+    Profile
+  </a>
+</nav>
+
+<!-- ════════ BODY ════════ -->
+<div class="learner-body">
+
+  <!-- ─── LEFT SIDEBAR ─── -->
+  <aside class="l-sidebar">
+    <div class="l-sidebar__user">
+      <div class="avatar avatar-md avatar-blue">AA</div>
+      <div>
+        <div class="l-sidebar__uname">Amara Asante</div>
+        <div class="l-sidebar__uid">NXU/ACT/2023/041</div>
+      </div>
+    </div>
+    <div class="l-sidebar__prog-wrap">
+      <div class="l-sidebar__prog-label"><span>Programme Progress</span><strong>46%</strong></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:46%"></div></div>
+    </div>
+    <div class="sidebar__section">
+      <a href="learner-home.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        My Activity
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Programme
+      </a>
+      <a href="learner-courses.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Courses
+        <span class="nav-link__badge">6</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Resources
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Assessments
+        <span class="nav-link__badge" style="background:#D97706;">2</span>
+      </a>
+    </div>
+    <div class="sidebar__section">
+      <div class="sidebar__label">Other</div>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Minor Courses
+        <span class="nav-link__badge">2</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Other Programmes
+      </a>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN AREA ─── -->
+  <main class="l-main">
+
+    <!-- Course Banner -->
+    <div class="course-banner">
+
+      <!-- Left: course info -->
+      <div class="banner-left">
+        <div class="banner-breadcrumb">
+          <a href="learner-home.html">Home</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <a href="#">Courses</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>Mathematical Methods I</span>
+        </div>
+
+        <div class="banner-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Major Course &nbsp;·&nbsp; Year 2, Semester 1
+        </div>
+
+        <h1 class="banner-title">Mathematical Methods I</h1>
+
+        <div class="banner-actions">
+          <a href="#" class="btn-continue">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Continue Learning
+          </a>
+          <button class="btn" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:var(--text-xs);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            My Progress
+          </button>
+        </div>
+
+        <div class="banner-date">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Last accessed today, Jun 18 &nbsp;·&nbsp; Currently on Ch 3, Task 3 of 5
+        </div>
+      </div>
+
+      <!-- Right: live event + progress -->
+      <div class="banner-right">
+
+        <!-- Live event -->
+        <div class="live-event-card">
+          <div class="live-event-card__header">
+            <span class="live-pill"><span class="live-pill__dot"></span> Live Now</span>
+            <span class="live-event-card__time">10:00 – 11:30 AM</span>
+          </div>
+          <div class="live-event-card__title">Financial Mathematics Lecture</div>
+          <div class="live-event-card__meta">Dr. Kwame Asiedu &nbsp;·&nbsp; Room 204, Block B</div>
+          <button class="btn-join">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+            Join Class
+          </button>
+        </div>
+
+        <!-- Progress -->
+        <div class="banner-progress">
+          <div class="banner-progress__label">
+            <span>Course Progress</span>
+            <strong>68%</strong>
+          </div>
+          <div class="banner-progress__bar">
+            <div class="banner-progress__fill" style="width:68%"></div>
+          </div>
+          <div class="banner-progress__stats">
+            <div class="bps"><strong>5 / 8</strong> Chapters started</div>
+            <div class="bps"><strong>29 / 42</strong> Tasks done</div>
+          </div>
+        </div>
+
+      </div><!-- /.banner-right -->
+
+    </div><!-- /.course-banner -->
+
+    <!-- Body: description + chapters | sidebar -->
+    <div class="course-body">
+
+      <!-- ── Left: description + chapters ── -->
+      <div class="course-main">
+
+        <p class="course-desc">
+          Mathematical Methods I provides a rigorous foundation in the mathematical techniques essential to actuarial science. Topics include differential and integral calculus, ordinary differential equations, linear algebra, and numerical methods. Students will develop both theoretical understanding and practical problem-solving skills applied throughout actuarial models.
+        </p>
+
+        <h2 class="chapters-heading">Chapters</h2>
+
+        <div class="chapter-list">
+
+          <!-- Chapter 1 — Complete -->
+          <div class="chapter-card">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--done">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div class="chapter-name">Chapter 1: Foundations of Calculus</div>
+                </div>
+                <div class="chapter-desc">Limits, continuity, and the fundamental theorem of calculus. Introduction to mathematical proof techniques used throughout the course.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand" onclick="toggleChapter(this)">
+                    View Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">5 tasks</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>100%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill progress-fill--success" style="width:100%"></div></div>
+                </div>
+                <a href="#" class="btn-ch-continue btn-ch-continue--ghost">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Review
+                </a>
+              </div>
+            </div>
+            <div class="task-list">
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                <div class="task-info"><div class="task-name">Introduction to Limits</div><div class="task-meta">Video &nbsp;·&nbsp; 14 min</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="task-info"><div class="task-name">Continuity & Differentiability Notes</div><div class="task-meta">Notes &nbsp;·&nbsp; 6 min read</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                <div class="task-info"><div class="task-name">The Fundamental Theorem of Calculus</div><div class="task-meta">Video &nbsp;·&nbsp; 21 min</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--exercise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+                <div class="task-info"><div class="task-name">Practice: Limit Problems (Set A)</div><div class="task-meta">Exercise &nbsp;·&nbsp; 10 questions</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--test"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="task-info"><div class="task-name">Chapter 1 Assessment</div><div class="task-meta">Test &nbsp;·&nbsp; 15 questions &nbsp;·&nbsp; Score: 88%</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chapter 2 — Complete -->
+          <div class="chapter-card">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--done">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div class="chapter-name">Chapter 2: Differentiation Techniques</div>
+                </div>
+                <div class="chapter-desc">Advanced rules of differentiation including chain rule, implicit differentiation, and applications to optimisation and curve sketching.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand" onclick="toggleChapter(this)">
+                    View Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">5 tasks</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>100%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill progress-fill--success" style="width:100%"></div></div>
+                </div>
+                <a href="#" class="btn-ch-continue btn-ch-continue--ghost">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Review
+                </a>
+              </div>
+            </div>
+            <div class="task-list"></div>
+          </div>
+
+          <!-- Chapter 3 — In Progress (active, expanded by default) -->
+          <div class="chapter-card is-active">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--active">3</div>
+                  <div class="chapter-name">Chapter 3: Differential Equations</div>
+                  <span class="badge badge-blue" style="font-size:10px;">Current</span>
+                </div>
+                <div class="chapter-desc">First and second-order ordinary differential equations, separable equations, integrating factors, and applications in population modelling and finance.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand open" onclick="toggleChapter(this)">
+                    Hide Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">5 tasks &nbsp;·&nbsp; 3 completed</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>60%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+                </div>
+                <a href="#" class="btn-ch-continue">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  Continue
+                </a>
+              </div>
+            </div>
+            <div class="task-list open">
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                <div class="task-info"><div class="task-name">Introduction to Ordinary Differential Equations</div><div class="task-meta">Video &nbsp;·&nbsp; 18 min</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="task-info"><div class="task-name">Types of Differential Equations</div><div class="task-meta">Notes &nbsp;·&nbsp; 5 min read</div></div>
+                <div class="task-status"><div class="task-check task-check--done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+              </div>
+              <div class="task-row task-current">
+                <div class="task-type-icon task-type-icon--exercise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+                <div class="task-info"><div class="task-name">Separable Equations — Practice Problems</div><div class="task-meta">Exercise &nbsp;·&nbsp; 12 questions &nbsp;·&nbsp; <strong style="color:var(--color-primary);">In progress</strong></div></div>
+                <div class="task-status"><div class="task-check task-check--current"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                <div class="task-info"><div class="task-name">Second-Order Linear ODEs</div><div class="task-meta">Video &nbsp;·&nbsp; 22 min</div></div>
+                <div class="task-status"><div class="task-check task-check--empty"></div></div>
+              </div>
+              <div class="task-row">
+                <div class="task-type-icon task-type-icon--test"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="task-info"><div class="task-name">Chapter 3 Assessment</div><div class="task-meta">Test &nbsp;·&nbsp; 15 questions</div></div>
+                <div class="task-status"><div class="task-check task-check--empty"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chapter 4 — Not started -->
+          <div class="chapter-card">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--locked">4</div>
+                  <div class="chapter-name">Chapter 4: Integral Calculus</div>
+                </div>
+                <div class="chapter-desc">Techniques of integration including substitution, integration by parts, partial fractions, and improper integrals. Applications to area and volume.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand" onclick="toggleChapter(this)">
+                    View Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">6 tasks</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>0%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+                </div>
+                <a href="#" class="btn-ch-continue btn-ch-continue--start">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  Start
+                </a>
+              </div>
+            </div>
+            <div class="task-list"></div>
+          </div>
+
+          <!-- Chapter 5 — Not started -->
+          <div class="chapter-card">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--locked">5</div>
+                  <div class="chapter-name">Chapter 5: Multivariable Calculus</div>
+                </div>
+                <div class="chapter-desc">Partial derivatives, gradient vectors, multiple integrals, and their applications in actuarial risk modelling and joint probability distributions.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand" onclick="toggleChapter(this)">
+                    View Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">5 tasks</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>0%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+                </div>
+                <button class="btn-ch-continue btn-ch-continue--ghost" disabled style="opacity:0.4;cursor:not-allowed;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Locked
+                </button>
+              </div>
+            </div>
+            <div class="task-list"></div>
+          </div>
+
+          <!-- Chapters 6–8 collapsed -->
+          <div class="chapter-card">
+            <div class="chapter-header">
+              <div class="chapter-info">
+                <div class="chapter-num-row">
+                  <div class="chapter-num chapter-num--locked">6</div>
+                  <div class="chapter-name">Chapter 6: Linear Algebra Fundamentals</div>
+                </div>
+                <div class="chapter-desc">Matrices, determinants, eigenvalues and eigenvectors, and systems of linear equations with applications to actuarial modelling.</div>
+                <div class="chapter-footer-row">
+                  <button class="btn-expand" onclick="toggleChapter(this)">
+                    View Chapter Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <span class="chapter-task-count">6 tasks</span>
+                </div>
+              </div>
+              <div class="chapter-right">
+                <div class="chapter-completion">
+                  <div class="ch-comp-label"><span>Completion</span><strong>0%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+                </div>
+                <button class="btn-ch-continue btn-ch-continue--ghost" disabled style="opacity:0.4;cursor:not-allowed;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Locked
+                </button>
+              </div>
+            </div>
+            <div class="task-list"></div>
+          </div>
+
+        </div><!-- /.chapter-list -->
+
+      </div><!-- /.course-main -->
+
+      <!-- ── Right sidebar ── -->
+      <aside class="course-sidebar">
+
+        <!-- Programme -->
+        <div class="cs-card">
+          <div class="cs-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            Programme
+          </div>
+          <div class="cs-card-body">
+            <div class="prog-label">Enrolled in</div>
+            <div class="prog-name">BSc In Actuarial Science</div>
+            <div class="prog-meta">Nexcorp University &nbsp;·&nbsp; Year 2, Sem 1</div>
+            <div class="prog-stats">
+              <div class="prog-stat"><div class="prog-stat__val">6</div><div class="prog-stat__lbl">Courses</div></div>
+              <div class="prog-stat"><div class="prog-stat__val">46%</div><div class="prog-stat__lbl">Progress</div></div>
+              <div class="prog-stat"><div class="prog-stat__val">1</div><div class="prog-stat__lbl">Complete</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resources -->
+        <div class="cs-card">
+          <div class="cs-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Resources
+          </div>
+          <div class="cs-card-body">
+            <div class="resource-list">
+              <a href="#" class="resource-item">
+                <div class="resource-icon resource-icon--pdf">📄</div>
+                <div class="resource-info">
+                  <div class="resource-name">Course Syllabus</div>
+                  <div class="resource-type">PDF &nbsp;·&nbsp; 0.4 MB</div>
+                </div>
+              </a>
+              <a href="#" class="resource-item">
+                <div class="resource-icon resource-icon--pdf">📐</div>
+                <div class="resource-info">
+                  <div class="resource-name">Formula Reference Sheet</div>
+                  <div class="resource-type">PDF &nbsp;·&nbsp; 0.8 MB</div>
+                </div>
+              </a>
+              <a href="#" class="resource-item">
+                <div class="resource-icon resource-icon--link">🔗</div>
+                <div class="resource-info">
+                  <div class="resource-name">Mathematical Methods for Actuaries</div>
+                  <div class="resource-type">External Textbook</div>
+                </div>
+              </a>
+              <a href="#" class="resource-item">
+                <div class="resource-icon resource-icon--folder">📁</div>
+                <div class="resource-info">
+                  <div class="resource-name">Past Exam Papers (2021–2025)</div>
+                  <div class="resource-type">Folder &nbsp;·&nbsp; 5 files</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teacher -->
+        <div class="cs-card">
+          <div class="cs-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Instructor
+          </div>
+          <div class="cs-card-body">
+            <div class="teacher-card">
+              <div class="avatar avatar-lg avatar-teal">KA</div>
+              <div>
+                <div class="teacher-name">Dr. Kwame Asiedu</div>
+                <div class="teacher-dept">Dept. of Mathematical Sciences</div>
+              </div>
+            </div>
+            <div class="teacher-stats">
+              <div class="teacher-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                248 learners
+              </div>
+              <div class="teacher-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                3 courses
+              </div>
+              <div class="teacher-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                4.8 rating
+              </div>
+            </div>
+            <button class="btn-message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Message Instructor
+            </button>
+          </div>
+        </div>
+
+      </aside><!-- /.course-sidebar -->
+
+    </div><!-- /.course-body -->
+
+  </main><!-- /.l-main -->
+
+</div><!-- /.learner-body -->
+
+<script src="../js/main.js"></script>
+<script>
+  function toggleChapter(btn) {
+    const card = btn.closest('.chapter-card');
+    const taskList = card.querySelector('.task-list');
+    const isOpen = taskList.classList.contains('open');
+
+    taskList.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.childNodes[0].textContent = isOpen ? 'View Chapter Details' : 'Hide Chapter Details';
+  }
+</script>
+
+</body>
+</html>

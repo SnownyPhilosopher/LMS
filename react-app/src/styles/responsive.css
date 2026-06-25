@@ -1,0 +1,64 @@
+/* ============================================================
+   Responsive — tablet & mobile adaptations for all dashboards
+   ============================================================ */
+
+/* ── Tablet (≤ 1024px): collapse multi-column grids ─────── */
+@media (max-width: 1024px) {
+  .two-col, .two-col-wide { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+  .tc-course-grid { grid-template-columns: repeat(2, 1fr); }
+  .overview-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Learner: drop the right info panel, reclaim the space */
+  .learner-scope .r-panel { display: none; }
+  .learner-scope .l-main { margin-right: 0; }
+}
+
+/* ── Mobile (≤ 768px): stack sidebars above content ─────── */
+@media (max-width: 768px) {
+  /* Super Admin / Admin / Teacher share the same shell shape */
+  .sa-body, .ad-body, .tc-body { flex-direction: column; }
+
+  .sa-sidebar, .ad-sidebar, .tc-sidebar {
+    position: static; width: 100%; height: auto; bottom: auto;
+    flex-direction: row; flex-wrap: wrap; gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .sa-sidebar .sidebar__section, .ad-sidebar .sidebar__section, .tc-sidebar .sidebar__section { margin-bottom: 0; }
+  .sa-sidebar .sidebar__label, .ad-sidebar .sidebar__label, .tc-sidebar .sidebar__label { display: none; }
+  .sa-sidebar .nav-link, .ad-sidebar .nav-link, .tc-sidebar .nav-link { border-left: none; padding: 8px 12px; border-radius: var(--radius); }
+  .sa-sidebar .sidebar__spacer, .ad-sidebar .sidebar__spacer, .tc-sidebar .sidebar__spacer { display: none; }
+  .sa-sidebar .sidebar__footer, .ad-sidebar .sidebar__footer, .tc-sidebar .sidebar__footer { display: none; }
+
+  .sa-main, .ad-main, .tc-main { margin-left: 0; }
+  .sa-content, .ad-content, .tc-content { padding: var(--sp-5); }
+
+  .overview-grid, .tc-course-grid { grid-template-columns: 1fr; }
+
+  /* Page headers stack their action buttons */
+  .sa-page-header, .ad-page-header, .tc-page-header { flex-direction: column; }
+  .sa-page-header__actions, .ad-page-header__actions, .tc-page-header__actions { width: 100%; }
+
+  /* Hide topbar search to keep the bar uncluttered on phones */
+  .sa-topbar__search, .ad-topbar__search, .tc-topbar__search { display: none; }
+  .ad-topbar__inst, .tc-topbar__inst { display: none; }
+
+  /* ── Learner: stack the 3-column layout vertically ── */
+  .learner-scope .learner-body { flex-direction: column; }
+  .learner-scope .l-sidebar {
+    position: static; width: 100%; height: auto; bottom: auto;
+    border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .learner-scope .l-main { margin-left: 0; margin-right: 0; }
+  .learner-scope .l-main-content { padding: var(--sp-5); }
+  .learner-scope .learner-topnav { overflow-x: auto; }
+  .learner-scope .inst-bar__program, .learner-scope .inst-bar__sep { display: none; }
+}
+
+/* ── Small phones (≤ 480px) ─────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .quick-actions { flex-direction: column; }
+  .prog-banner { flex-direction: column; align-items: flex-start; gap: var(--sp-4); }
+  .prog-banner__stats { width: 100%; justify-content: space-between; }
+}

@@ -1,0 +1,9 @@
+@import './styles/base.css';
+@import './styles/app.css';
+@import './styles/landing.css';
+@import './styles/learner.css';
+@import './styles/superadmin.css';
+@import './styles/admin.css';
+@import './styles/teacher.css';
+@import './styles/course.css';
+@import './styles/responsive.css';
