@@ -19,7 +19,8 @@ const emptyClass = { title: '', course: '', date: '2026-06-19', time: '10:00', d
 export default function TeacherDashboard() {
   const { state, actions, toast } = useStore()
   const navigate = useNavigate()
-  const onNav = (name) => (name === 'My Courses' ? navigate('/teacher/courses') : toast(`${name} — demo`, 'info'))
+  const TROUTES = { 'My Courses': '/teacher/courses', Analytics: '/teacher/analytics', 'My Learners': '/teacher/learners', 'Live Classes': '/teacher/classes' }
+  const onNav = (name) => (TROUTES[name] ? navigate(TROUTES[name]) : toast(`${name} — demo`, 'info'))
   const [modal, setModal] = useState(null)
   const [course, setCourse] = useState(emptyCourse)
   const [klass, setKlass] = useState({ ...emptyClass, course: state.courses[0]?.name || '' })

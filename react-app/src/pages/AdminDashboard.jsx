@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import AccountMenu from '../components/AccountMenu'
 import NotificationBell from '../components/NotificationBell'
@@ -18,6 +18,9 @@ const emptyInvite = { role: '', firstName: '', lastName: '', email: '', dept: ''
 
 export default function AdminDashboard() {
   const { state, actions, toast } = useStore()
+  const navigate = useNavigate()
+  const AROUTES = { Teachers: '/admin/teachers', Learners: '/admin/learners', Guardians: '/admin/guardians' }
+  const onNav = (name) => (AROUTES[name] ? navigate(AROUTES[name]) : toast(`${name} — demo`, 'info'))
   const [tab, setTab] = useState('teachers')
   const [modal, setModal] = useState(false)
   const [invite, setInvite] = useState(emptyInvite)
@@ -99,7 +102,7 @@ export default function AdminDashboard() {
             <div key={sec.label} className="sidebar__section">
               <div className="sidebar__label">{sec.label}</div>
               {sec.links.map((l) => (
-                <a key={l.name} className={`nav-link${l.active ? ' active' : ''}`} onClick={() => !l.active && toast(`${l.name} — demo`, 'info')}>
+                <a key={l.name} className={`nav-link${l.active ? ' active' : ''}`} onClick={() => !l.active && onNav(l.name)}>
                   <Icon name={l.icon} /> {l.name}
                   {l.badge && <span className="nav-link__badge" style={l.badgeColor ? { background: l.badgeColor } : undefined}>{l.badge}</span>}
                 </a>

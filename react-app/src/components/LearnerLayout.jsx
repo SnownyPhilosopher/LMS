@@ -8,9 +8,9 @@ import { useStore } from '../store/store'
 const TOPNAV = [
   { key: 'dashboard', icon: 'home', label: 'Home', to: '/learner' },
   { key: 'courses', icon: 'book', label: 'Courses', to: '/learner/courses' },
-  { key: 'calendar', icon: 'calendar', label: 'Calendar' },
-  { key: 'library', icon: 'library', label: 'Library' },
-  { key: 'profile', icon: 'user', label: 'Profile' },
+  { key: 'calendar', icon: 'calendar', label: 'Calendar', to: '/learner/calendar' },
+  { key: 'library', icon: 'library', label: 'Library', to: '/learner/library' },
+  { key: 'profile', icon: 'user', label: 'Profile', to: '/learner/profile' },
 ]
 
 const SIDENAV = [

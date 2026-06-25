@@ -42,7 +42,8 @@ function MiniCalendar() {
 export default function LearnerHome() {
   const { state, toast } = useStore()
   const navigate = useNavigate()
-  const onNav = (label) => (label === 'Courses' ? navigate('/learner/courses') : toast(`${label} — demo`, 'info'))
+  const LROUTES = { Courses: '/learner/courses', Calendar: '/learner/calendar', Library: '/learner/library', Profile: '/learner/profile' }
+  const onNav = (label) => (LROUTES[label] ? navigate(LROUTES[label]) : toast(`${label} — demo`, 'info'))
 
   // Derive programme stats from the course data in the store
   const courses = state.myCourses
