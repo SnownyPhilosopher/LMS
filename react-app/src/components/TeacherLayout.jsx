@@ -13,8 +13,10 @@ const SIDEBAR = [
     { key: 'courses', icon: 'book', name: 'My Courses', to: '/teacher/courses', badge: 'count' },
     { key: 'learners', icon: 'users', name: 'My Learners', to: '/teacher/learners', badge: '248' },
     { key: 'classes', icon: 'calendar', name: 'Live Classes', to: '/teacher/classes', badge: '1', badgeColor: '#DC2626' },
+    { key: 'attendance', icon: 'checkSquare', name: 'Attendance', to: '/teacher/attendance' },
   ] },
   { label: 'Assessment', links: [
+    { key: 'results', icon: 'award', name: 'Gradebook', to: '/teacher/results' },
     { key: 'grading', icon: 'checkSquare', name: 'Grading Queue', badge: '14', badgeColor: '#D97706' },
     { key: 'assessments', icon: 'fileText', name: 'Assessments' },
   ] },

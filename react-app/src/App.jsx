@@ -6,10 +6,13 @@ import LearnerCourses from './pages/LearnerCourses'
 import LearnerCalendar from './pages/LearnerCalendar'
 import LearnerLibrary from './pages/LearnerLibrary'
 import LearnerProfile from './pages/LearnerProfile'
+import LearnerResults from './pages/LearnerResults'
 import TeacherCourses from './pages/TeacherCourses'
 import TeacherAnalytics from './pages/TeacherAnalytics'
 import TeacherLiveClasses from './pages/TeacherLiveClasses'
 import TeacherMyLearners from './pages/TeacherMyLearners'
+import TeacherGradebook from './pages/TeacherGradebook'
+import TeacherAttendance from './pages/TeacherAttendance'
 import CourseDetail from './pages/CourseDetail'
 import SuperAdmin from './pages/SuperAdmin'
 import AdminDashboard from './pages/AdminDashboard'
@@ -33,12 +36,15 @@ const TITLES = [
   [/^\/learner\/calendar/, 'Calendar'],
   [/^\/learner\/library/, 'Library'],
   [/^\/learner\/profile/, 'Profile'],
+  [/^\/learner\/results/, 'My Results'],
   [/^\/learner/, 'Learner Dashboard'],
   [/^\/teacher\/courses\/.+/, 'Course'],
   [/^\/teacher\/courses/, 'My Courses'],
   [/^\/teacher\/analytics/, 'Analytics'],
   [/^\/teacher\/classes/, 'Live Classes'],
   [/^\/teacher\/learners/, 'My Learners'],
+  [/^\/teacher\/results/, 'Gradebook'],
+  [/^\/teacher\/attendance/, 'Attendance'],
   [/^\/teacher/, 'Teacher Dashboard'],
   [/^\/admin\/teachers/, 'Teachers'],
   [/^\/admin\/learners/, 'Learners'],
@@ -67,12 +73,15 @@ export default function App() {
       <Route path="/learner/calendar" element={<RequireRole role="learner"><LearnerCalendar /></RequireRole>} />
       <Route path="/learner/library" element={<RequireRole role="learner"><LearnerLibrary /></RequireRole>} />
       <Route path="/learner/profile" element={<RequireRole role="learner"><LearnerProfile /></RequireRole>} />
+      <Route path="/learner/results" element={<RequireRole role="learner"><LearnerResults /></RequireRole>} />
       <Route path="/teacher" element={<RequireRole role="teacher"><TeacherDashboard /></RequireRole>} />
       <Route path="/teacher/courses" element={<RequireRole role="teacher"><TeacherCourses /></RequireRole>} />
       <Route path="/teacher/courses/:courseId" element={<RequireRole role="teacher"><CourseDetail /></RequireRole>} />
       <Route path="/teacher/analytics" element={<RequireRole role="teacher"><TeacherAnalytics /></RequireRole>} />
       <Route path="/teacher/classes" element={<RequireRole role="teacher"><TeacherLiveClasses /></RequireRole>} />
       <Route path="/teacher/learners" element={<RequireRole role="teacher"><TeacherMyLearners /></RequireRole>} />
+      <Route path="/teacher/results" element={<RequireRole role="teacher"><TeacherGradebook /></RequireRole>} />
+      <Route path="/teacher/attendance" element={<RequireRole role="teacher"><TeacherAttendance /></RequireRole>} />
       <Route path="/admin/teachers" element={<RequireRole role="admin"><AdminTeachers /></RequireRole>} />
       <Route path="/admin/learners" element={<RequireRole role="admin"><AdminLearners /></RequireRole>} />
       <Route path="/admin/guardians" element={<RequireRole role="admin"><AdminGuardians /></RequireRole>} />
