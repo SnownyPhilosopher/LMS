@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState, useCallback } from 'react'
 import { makeSeed, AVATAR_COLORS } from './seed'
 
-const stateKey = (preset) => `soteria.state.${preset}.v3`
+const stateKey = (preset) => `soteria.state.${preset}.v4`
 const SESSION_KEY = 'soteria.session.v2'
 
 // ── helpers ──────────────────────────────────────────────

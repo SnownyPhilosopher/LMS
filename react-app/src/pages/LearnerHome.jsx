@@ -2,14 +2,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import AccountMenu from '../components/AccountMenu'
 import NotificationBell from '../components/NotificationBell'
-import { Avatar, Badge, ProgressBar } from '../components/common'
+import { Avatar, ProgressBar } from '../components/common'
 import { useStore } from '../store/store'
+import { buildTimetable, DAYS, TODAY_DAY } from '../lib/academics'
 
 const NAV = [
   { icon: 'grid', label: 'Dashboard', active: true },
   { icon: 'activity', label: 'My Activity' },
   { icon: 'graduation', label: 'Programme' },
   { icon: 'book', label: 'Courses', badge: '6' },
+  { icon: 'award', label: 'Results' },
   { icon: 'file', label: 'Resources' },
   { icon: 'checkSquare', label: 'Assessments', badge: '2', badgeColor: '#D97706' },
 ]
@@ -43,8 +45,9 @@ export default function LearnerHome() {
   const { state, toast } = useStore()
   const navigate = useNavigate()
   const me = state.meta.learner
-  const LROUTES = { Courses: '/learner/courses', Calendar: '/learner/calendar', Library: '/learner/library', Profile: '/learner/profile' }
+  const LROUTES = { Courses: '/learner/courses', Calendar: '/learner/calendar', Library: '/learner/library', Profile: '/learner/profile', Results: '/learner/results' }
   const onNav = (label) => (LROUTES[label] ? navigate(LROUTES[label]) : toast(`${label} — demo`, 'info'))
+  const timetable = buildTimetable(state.myCourses)
 
   // Derive programme stats from the course data in the store
   const courses = state.myCourses

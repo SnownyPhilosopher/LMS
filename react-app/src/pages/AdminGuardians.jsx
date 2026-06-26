@@ -4,22 +4,15 @@ import AdminLayout from '../components/AdminLayout'
 import { Avatar } from '../components/common'
 import { useStore } from '../store/store'
 
-const GUARDIANS = [
-  { id: 'gu1', initials: 'KA', color: 'blue', name: 'Kwesi Asante', relation: 'Father', learner: 'Amara Asante', email: 'k.asante@gmail.com', phone: '+233 24 555 0142', status: ['green', 'Active'] },
-  { id: 'gu2', initials: 'AO', color: 'green', name: 'Akua Owusu', relation: 'Mother', learner: 'Eric Owusu', email: 'a.owusu@gmail.com', phone: '+233 20 441 8820', status: ['green', 'Active'] },
-  { id: 'gu3', initials: 'YF', color: 'purple', name: 'Yaw Frimpong', relation: 'Father', learner: 'Abena Frimpong', email: 'y.frimpong@gmail.com', phone: '+233 27 119 3345', status: ['green', 'Active'] },
-  { id: 'gu4', initials: 'EM', color: 'orange', name: 'Esi Mensah', relation: 'Mother', learner: 'Daniel Mensah', email: 'e.mensah@gmail.com', phone: '+233 24 770 2218', status: ['yellow', 'Pending'] },
-  { id: 'gu5', initials: 'KN', color: 'teal', name: 'Kojo Nyarko', relation: 'Guardian', learner: 'Grace Nyarko', email: 'k.nyarko@gmail.com', phone: '+233 23 882 6610', status: ['gray', 'Inactive'] },
-]
-
 export default function AdminGuardians() {
   const { state, toast } = useStore()
   const [search, setSearch] = useState('')
+  const guardians = state.guardians || []
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase()
-    return GUARDIANS.filter((g) => !q || g.name.toLowerCase().includes(q) || g.learner.toLowerCase().includes(q))
-  }, [search])
+    return guardians.filter((g) => !q || g.name.toLowerCase().includes(q) || g.learner.toLowerCase().includes(q))
+  }, [guardians, search])
 
   return (
     <AdminLayout active="guardians">
