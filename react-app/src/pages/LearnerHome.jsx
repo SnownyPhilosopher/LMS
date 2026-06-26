@@ -118,15 +118,9 @@ export default function LearnerHome() {
 
         <main className="l-main">
           <div className="l-main-content">
-            <div className="greeting">
-              <div className="greeting__date">Thursday, 18 June 2026</div>
-              <div className="greeting__title">Good morning, {me.first} 👋</div>
-              <div className="greeting__sub">You have {dueSoon} upcoming deadlines and a lecture at 10:00 AM today.</div>
-            </div>
-
             <div className="prog-banner">
               <div className="prog-banner__info">
-                <h3>BSc In Actuarial Science — Year 2, Semester 1</h3>
+                <h3>{me.program}</h3>
                 <p>{inProgress} of {courses.length} major courses in progress · {completed} completed this semester</p>
                 <div className="prog-banner__bar"><div className="prog-banner__fill" style={{ width: `${overall}%` }} /></div>
               </div>
@@ -140,18 +134,21 @@ export default function LearnerHome() {
               </div>
             </div>
 
+            <div className="greeting__sub" style={{ marginTop: 'calc(-1 * var(--sp-3))', marginBottom: 'var(--sp-6)' }}>
+              You have {dueSoon} upcoming deadlines and {timetable.filter((t) => t.day === TODAY_DAY).length} lectures scheduled today.
+            </div>
+
             <div className="s-heading">
               <h2>My Courses — Major</h2>
               <a onClick={() => navigate('/learner/courses')}>View all</a>
             </div>
 
             <div className="lcourse-grid">
-              {state.myCourses.map((c) => (
+              {state.myCourses.slice(0, 3).map((c) => (
                 <a key={c.id} className="lcourse-card" onClick={() => navigate(`/learner/courses/${c.id}`)}>
                   <div className={`lcc-cover course-card__cover--${c.cover}`}>
                     <span className="lcc-emoji"><Icon name={c.icon} /></span>
                     <span className="lcc-type-badge">Core</span>
-                    <span className="lcc-status-badge"><Badge color={c.status[0]}>{c.status[1]}</Badge></span>
                   </div>
                   <div className="lcc-body">
                     <div className="lcc-title">{c.title}</div>
@@ -186,25 +183,29 @@ export default function LearnerHome() {
         </main>
 
         <aside className="r-panel">
-          <div className="r-section-title">Upcoming Events</div>
-          <div className="event-list">
-            {state.events.map((e) => (
-              <div key={e.id} className="event-row">
-                <div className="event-date">
-                  <div className="event-day">{e.day}</div>
-                  <div className="event-month">{e.month}</div>
+          <div className="r-section-title">This Week · {timetable.length} lectures</div>
+          <div className="tt-week">
+            {DAYS.map((day) => {
+              const items = timetable.filter((t) => t.day === day)
+              if (!items.length) return null
+              return (
+                <div key={day} className="tt-day">
+                  <div className={`tt-day__name${day === TODAY_DAY ? ' tt-day__name--today' : ''}`}>{day}{day === TODAY_DAY ? ' · Today' : ''}</div>
+                  {items.map((it) => (
+                    <div key={it.id} className={`tt-chip tt-chip--${it.color}`}>
+                      <span className="tt-chip__time">{it.time}</span>
+                      <div className="tt-chip__body">
+                        <div className="tt-chip__sub">{it.subject}</div>
+                        <div className="tt-chip__room">{it.room}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className={`event-line event-line--${e.line}`} />
-                <div className="event-info">
-                  <div className="event-title">{e.title}</div>
-                  <div className="event-meta">{e.meta}</div>
-                </div>
-                {e.today && <span className="event-today">Today</span>}
-              </div>
-            ))}
+              )
+            })}
           </div>
 
-          <div className="r-section-title" style={{ marginTop: 'var(--sp-2)' }}>June 2026</div>
+          <div className="r-section-title" style={{ marginTop: 'var(--sp-4)' }}>June 2026</div>
           <MiniCalendar />
         </aside>
       </div>

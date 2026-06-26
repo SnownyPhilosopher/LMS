@@ -8,8 +8,8 @@ import { useStore } from '../store/store'
 
 const SIDEBAR = [
   { label: 'Overview', links: [{ icon: 'grid', name: 'Dashboard', active: true }, { icon: 'barChart', name: 'Analytics' }] },
-  { label: 'Teaching', links: [{ icon: 'book', name: 'My Courses', badge: '3' }, { icon: 'users', name: 'My Learners', badge: '248' }, { icon: 'calendar', name: 'Live Classes', badge: '1', badgeColor: '#DC2626' }] },
-  { label: 'Assessment', links: [{ icon: 'checkSquare', name: 'Grading Queue', badge: '14', badgeColor: '#D97706' }, { icon: 'fileText', name: 'Assessments' }] },
+  { label: 'Teaching', links: [{ icon: 'book', name: 'My Courses', badge: '3' }, { icon: 'users', name: 'My Learners', badge: '248' }, { icon: 'calendar', name: 'Live Classes', badge: '1', badgeColor: '#DC2626' }, { icon: 'checkSquare', name: 'Attendance' }] },
+  { label: 'Assessment', links: [{ icon: 'award', name: 'Gradebook' }, { icon: 'checkSquare', name: 'Grading Queue', badge: '14', badgeColor: '#D97706' }, { icon: 'fileText', name: 'Assessments' }] },
   { label: 'Resources', links: [{ icon: 'message', name: 'Messages', badge: '3' }, { icon: 'settings', name: 'Settings' }] },
 ]
 
@@ -20,7 +20,7 @@ export default function TeacherDashboard() {
   const { state, actions, toast } = useStore()
   const navigate = useNavigate()
   const me = state.meta.teacher
-  const TROUTES = { 'My Courses': '/teacher/courses', Analytics: '/teacher/analytics', 'My Learners': '/teacher/learners', 'Live Classes': '/teacher/classes' }
+  const TROUTES = { 'My Courses': '/teacher/courses', Analytics: '/teacher/analytics', 'My Learners': '/teacher/learners', 'Live Classes': '/teacher/classes', Attendance: '/teacher/attendance', Gradebook: '/teacher/results' }
   const onNav = (name) => (TROUTES[name] ? navigate(TROUTES[name]) : toast(`${name} — demo`, 'info'))
   const [modal, setModal] = useState(null)
   const [course, setCourse] = useState(emptyCourse)

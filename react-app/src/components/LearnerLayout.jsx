@@ -18,6 +18,7 @@ const SIDENAV = [
   { key: 'activity', icon: 'activity', label: 'My Activity' },
   { key: 'programme', icon: 'graduation', label: 'Programme' },
   { key: 'courses', icon: 'book', label: 'Courses', to: '/learner/courses', badge: 'count' },
+  { key: 'results', icon: 'award', label: 'Results', to: '/learner/results' },
   { key: 'resources', icon: 'file', label: 'Resources' },
   { key: 'assessments', icon: 'checkSquare', label: 'Assessments', badge: '2', badgeColor: '#D97706' },
 ]
