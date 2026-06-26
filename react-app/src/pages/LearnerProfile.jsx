@@ -3,22 +3,19 @@ import LearnerLayout from '../components/LearnerLayout'
 import { ProgressBar, Badge } from '../components/common'
 import { useStore } from '../store/store'
 
-const DETAILS = [
-  ['Full name', 'Amara Asante'],
-  ['Student ID', 'NXU/ACT/2023/041'],
-  ['Email', 'a.asante@nexcorp.edu'],
-  ['Phone', '+233 24 555 0142'],
-  ['Programme', 'BSc Actuarial Science'],
-  ['Department', 'Mathematical Sciences'],
-  ['Year / Semester', 'Year 2 · Semester 1'],
-  ['Enrolled', 'September 2023'],
-]
-
 export default function LearnerProfile() {
   const { state, toast } = useStore()
+  const me = state.meta.learner
   const overall = state.myCourses.length
     ? Math.round(state.myCourses.reduce((a, c) => a + c.pct, 0) / state.myCourses.length) : 0
   const completed = state.myCourses.filter((c) => c.pct === 100).length
+  const details = [
+    ['Full name', me.name],
+    ['Student ID', me.id],
+    ['Email', me.email],
+    ['Class / Programme', me.program],
+    ['School', state.meta.institution],
+  ]
 
   return (
     <LearnerLayout active="profile">
@@ -34,9 +31,9 @@ export default function LearnerProfile() {
 
       <div className="profile-grid">
         <div className="profile-card">
-          <div className="profile-avatar">AA</div>
-          <div className="profile-name">Amara Asante</div>
-          <div className="profile-role">BSc Actuarial Science · Year 2</div>
+          <div className="profile-avatar" style={{ background: me.grad }}>{me.initials}</div>
+          <div className="profile-name">{me.name}</div>
+          <div className="profile-role">{me.sub}</div>
           <Badge color="green">Active</Badge>
           <div className="profile-stats">
             <div><div className="profile-stat__val">{overall}%</div><div className="profile-stat__lbl">Progress</div></div>
@@ -49,7 +46,7 @@ export default function LearnerProfile() {
           <div className="detail-card">
             <div className="detail-card__head">Personal Details</div>
             <div className="detail-rows">
-              {DETAILS.map(([label, value]) => (
+              {details.map(([label, value]) => (
                 <div key={label} className="detail-row">
                   <span className="detail-row__label">{label}</span>
                   <span className="detail-row__value">{value}</span>

@@ -44,6 +44,8 @@ Tackle in this order (each is independent):
   - [x] Hero with progress; tabs: Overview, Notes, Quizzes, Exams, Online Classes
   - [x] Notes reader, interactive auto-graded quiz, exam cards (locked state), live + scheduled classes
   - [ ] Mark task complete → updates course % in the store (still display-only)
+- [x] **Three demo presets** — University / High School / Primary picker on sign-in; swaps all data (school, people, subjects, identities, greetings, chatbot) per preset, persisted separately
+- [x] **Soti chatbot** — learner-only floating assistant, answers grounded in real store data
 - [x] **Secondary pages wired up** (sidebar/topnav now navigate, with active states)
   - [x] Learner: Calendar (month grid + events), Library (resource grid + filter), Profile
   - [x] Teacher: Analytics (stats + CSS charts), Live Classes (+ schedule modal), My Learners (filterable table)

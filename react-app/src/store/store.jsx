@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState, useCallback } from 'react'
 import { makeSeed, AVATAR_COLORS } from './seed'
 
-const STORAGE_KEY = 'soteria.state.v2'
-const SESSION_KEY = 'soteria.session.v1'
+const stateKey = (preset) => `soteria.state.${preset}.v3`
+const SESSION_KEY = 'soteria.session.v2'
 
 // ── helpers ──────────────────────────────────────────────
 let idc = 0
@@ -10,20 +10,31 @@ const uid = (p = 'x') => `${p}_${Date.now().toString(36)}_${idc++}`
 const initialsOf = (first, last) => `${(first || '').trim()[0] || ''}${(last || '').trim()[0] || ''}`.toUpperCase() || '?'
 const colorFor = (seed) => AVATAR_COLORS[Math.abs([...String(seed)].reduce((a, c) => a + c.charCodeAt(0), 0)) % AVATAR_COLORS.length]
 
-function load() {
-  const seed = makeSeed()
+function load(preset) {
+  const seed = makeSeed(preset)
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(stateKey(preset))
     if (raw) return { ...seed, ...JSON.parse(raw) } // seed fills in any keys added since the state was saved
   } catch { /* ignore */ }
   return seed
 }
 
+function loadSession() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY))
+    if (s && typeof s === 'object') return { role: s.role || null, preset: s.preset || 'university' }
+  } catch { /* ignore */ }
+  return { role: null, preset: 'university' }
+}
+
 // ── reducer ──────────────────────────────────────────────
 function reducer(state, action) {
   switch (action.type) {
+    case 'LOAD_PRESET':
+      return action.payload
+
     case 'RESET':
-      return makeSeed()
+      return makeSeed(action.payload?.preset || 'university')
 
     case 'ADD_INSTITUTION': {
       const { name, type } = action.payload
@@ -31,7 +42,7 @@ function reducer(state, action) {
         id: uid('inst'),
         initials: name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'IN',
         color: colorFor(name),
-        name, type: type || 'University',
+        name, type: type || 'Institution',
         depts: 0, programs: 0, learners: 0, completion: 0,
         status: ['gray', 'Setup'],
       }
@@ -57,7 +68,8 @@ function reducer(state, action) {
         next.roleCounts.teachers += 1
         next.counts.teachers += 1
       } else if (role === 'learner') {
-        const l = { id: uid('l'), initials, color, name, sid: `NXU/NEW/2026/${String(state.learners.length + 1).padStart(3, '0')}`, program: program || '—', pct: 0, last: 'Just now', status: ['green', 'Active'], _new: true }
+        const pfx = (state.learners[0]?.sid || 'STU').split('/')[0]
+        const l = { id: uid('l'), initials, color, name, sid: `${pfx}/NEW/2026/${String(state.learners.length + 1).padStart(3, '0')}`, program: program || '—', pct: 0, last: 'Just now', status: ['green', 'Active'], _new: true }
         next.learners = [l, ...state.learners]
         next.roleCounts.learners += 1
         next.counts.learners += 1
@@ -96,7 +108,6 @@ function reducer(state, action) {
         meta: ['0 enrolled', d ? d.toLocaleDateString('en-GB', { weekday: 'short' }) + (time ? ` · ${time}` : '') : 'Scheduled'],
         _new: true,
       }
-      // insert after any live class
       const liveCount = state.classes.filter((c) => c.live).length
       const copy = [...state.classes]
       copy.splice(liveCount, 0, cls)
@@ -133,15 +144,13 @@ function reducer(state, action) {
 const StoreContext = createContext(null)
 
 export function StoreProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, undefined, load)
+  const [session, setSession] = useState(loadSession)
+  const [state, dispatch] = useReducer(reducer, undefined, () => load(session.preset))
   const [toasts, setToasts] = useState([])
-  const [session, setSession] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || { role: null } } catch { return { role: null } }
-  })
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) } catch { /* ignore */ }
-  }, [state])
+    try { localStorage.setItem(stateKey(session.preset), JSON.stringify(state)) } catch { /* ignore */ }
+  }, [state, session.preset])
 
   useEffect(() => {
     try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)) } catch { /* ignore */ }
@@ -161,11 +170,17 @@ export function StoreProvider({ children }) {
     setStatus: (list, id, status) => dispatch({ type: 'SET_STATUS', payload: { list, id, status } }),
     remove: (list, id) => dispatch({ type: 'REMOVE', payload: { list, id } }),
     markNotifsRead: (role) => dispatch({ type: 'MARK_NOTIFS_READ', payload: { role } }),
-    reset: () => { dispatch({ type: 'RESET' }); toast('Demo data reset') },
-  }), [toast])
+    reset: () => { dispatch({ type: 'RESET', payload: { preset: session.preset } }); toast('Demo data reset') },
+  }), [toast, session.preset])
 
-  const login = useCallback((role) => setSession({ role }), [])
-  const logout = useCallback(() => setSession({ role: null }), [])
+  // login also picks the demo preset; switching preset swaps in that dataset.
+  const login = useCallback((role, preset = 'university') => {
+    setSession((prev) => {
+      if (preset !== prev.preset) dispatch({ type: 'LOAD_PRESET', payload: load(preset) })
+      return { role, preset }
+    })
+  }, [])
+  const logout = useCallback(() => setSession((prev) => ({ role: null, preset: prev.preset })), [])
 
   const value = useMemo(() => ({ state, actions, toast, toasts, session, login, logout }),
     [state, actions, toast, toasts, session, login, logout])

@@ -23,7 +23,7 @@ export default function LearnerCalendar() {
     <LearnerLayout active="calendar">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">BSc Actuarial Science · Year 2</div>
+          <div className="page-head__eyebrow">{state.meta.learner.sub}</div>
           <div className="page-head__title">Calendar</div>
           <div className="page-head__sub">{state.events.length} events this month</div>
         </div>

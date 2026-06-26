@@ -23,8 +23,9 @@ function getReply(text, state) {
   // Whole-word / phrase match so short tokens like "hi" don't match "this".
   const has = (...words) => words.some((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(t))
 
-  if (has('hi', 'hello', 'hey', 'yo ', 'good morning', 'good afternoon')) {
-    return { text: "Hi Amara! 👋 I'm Soti, your study assistant. I can help you keep on top of your courses — ask me what's due, how you're doing, or where to find something." }
+  const first = state.meta?.learner?.first || 'there'
+  if (has('hi', 'hello', 'hey', 'yo', 'good morning', 'good afternoon')) {
+    return { text: `Hi ${first}! 👋 I'm Soti, your study assistant. I can help you keep on top of your courses — ask me what's due, how you're doing, or where to find something.` }
   }
   if (has('due', 'deadline', 'assignment', 'upcoming', 'this week', 'exam', 'when')) {
     const next = events.slice(0, 3).map((e) => `• ${e.day} ${e.month} — ${e.title} (${e.meta})`).join('\n')
@@ -84,7 +85,8 @@ export default function Chatbot() {
   // Greet on first open
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ from: 'bot', text: "Hi Amara! 👋 I'm Soti, your study assistant. Ask me anything about your courses — or tap a suggestion below." }])
+      const first = state.meta?.learner?.first || 'there'
+      setMessages([{ from: 'bot', text: `Hi ${first}! 👋 I'm Soti, your study assistant. Ask me anything about your courses — or tap a suggestion below.` }])
     }
   }, [open, messages.length])
 

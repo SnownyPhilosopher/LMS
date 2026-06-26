@@ -2,15 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from './Icon'
 import { useStore } from '../store/store'
-import { ROLES } from '../store/seed'
+import { ROLE_DEFS } from '../store/seed'
 
 // Renders the topbar user avatar with a dropdown: identity, switch role, sign out.
+// Identity (initials/grad/name) comes from the active preset's meta when not passed in.
 export default function AccountMenu({ initials, grad, title }) {
-  const { session, logout, actions } = useStore()
+  const { state, session, logout, actions } = useStore()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
-  const role = ROLES.find((r) => r.id === session.role)
+  const roleDef = ROLE_DEFS.find((r) => r.id === session.role)
+  const id = state.meta?.[session.role] || {}
+  initials = initials || id.initials
+  grad = grad || id.grad
+  title = title || id.name
 
   useEffect(() => {
     const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
@@ -29,8 +34,8 @@ export default function AccountMenu({ initials, grad, title }) {
       {open && (
         <div className="acct-menu">
           <div className="acct-menu__head">
-            <div className="acct-menu__name">{role?.name || title}</div>
-            <div className="acct-menu__role">{role?.label}</div>
+            <div className="acct-menu__name">{id.name || title}</div>
+            <div className="acct-menu__role">{roleDef?.label}</div>
           </div>
           <button className="acct-menu__item" onClick={() => { setOpen(false); logout(); navigate('/login') }}>
             <Icon name="users" /> Switch role

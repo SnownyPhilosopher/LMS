@@ -19,6 +19,7 @@ const emptyInvite = { role: '', firstName: '', lastName: '', email: '', dept: ''
 export default function AdminDashboard() {
   const { state, actions, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.admin
   const AROUTES = { Teachers: '/admin/teachers', Learners: '/admin/learners', Guardians: '/admin/guardians' }
   const onNav = (name) => (AROUTES[name] ? navigate(AROUTES[name]) : toast(`${name} — demo`, 'info'))
   const [tab, setTab] = useState('teachers')
@@ -80,7 +81,7 @@ export default function AdminDashboard() {
           <span className="ad-topbar__name">Soteria Learning</span>
         </Link>
         <div className="ad-topbar__sep" />
-        <span className="ad-topbar__inst">Nexcorp University</span>
+        <span className="ad-topbar__inst">{state.meta.institution}</span>
         <span className="ad-topbar__role">Admin</span>
         <div className="ad-topbar__spacer" />
         <div className="ad-topbar__search">
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
         <div className="ad-topbar__actions">
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="RO" grad="linear-gradient(135deg,#2563EB,#1E3A8A)" title="Rebecca Owusu" />
+          <AccountMenu />
         </div>
       </header>
 
@@ -112,10 +113,10 @@ export default function AdminDashboard() {
           <div className="sidebar__spacer" />
           <div className="sidebar__footer">
             <div className="sidebar__user">
-              <div className="avatar avatar-md" style={{ background: 'linear-gradient(135deg,#2563EB,#1E3A8A)', color: '#fff' }}>RO</div>
+              <div className="avatar avatar-md" style={{ background: me.grad, color: '#fff' }}>{me.initials}</div>
               <div className="sidebar__user-info">
-                <div className="sidebar__user-name">Rebecca Owusu</div>
-                <div className="sidebar__user-role">Institution Admin</div>
+                <div className="sidebar__user-name">{me.name}</div>
+                <div className="sidebar__user-role">{me.sub}</div>
               </div>
             </div>
           </div>
@@ -125,7 +126,7 @@ export default function AdminDashboard() {
           <div className="ad-content">
             <div className="ad-page-header">
               <div>
-                <div className="ad-page-header__eyebrow">Nexcorp University</div>
+                <div className="ad-page-header__eyebrow">{state.meta.institution}</div>
                 <div className="ad-page-header__title">Admin Dashboard</div>
                 <div className="ad-page-header__sub">Thursday, 18 June 2026 · 6 departments · 14 programs</div>
               </div>

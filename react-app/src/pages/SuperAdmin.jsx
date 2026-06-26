@@ -33,6 +33,7 @@ const emptyTeacher = { firstName: '', lastName: '', email: '', dept: '' }
 
 export default function SuperAdmin() {
   const { state, actions, toast } = useStore()
+  const me = state.meta.superadmin
   const [modal, setModal] = useState(null)
   const [query, setQuery] = useState('')
   const [inst, setInst] = useState(emptyInst)
@@ -88,7 +89,7 @@ export default function SuperAdmin() {
           <button className="topbar-icon-btn" data-tooltip="Audit Log" aria-label="Audit log" onClick={() => toast('Audit log — demo', 'info')}><Icon name="fileText" /></button>
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="PA" grad="linear-gradient(135deg,#DC2626,#7F1D1D)" title="Platform Administrator" />
+          <AccountMenu />
         </div>
       </header>
 
@@ -108,10 +109,10 @@ export default function SuperAdmin() {
           <div className="sidebar__spacer" />
           <div className="sidebar__footer">
             <div className="sidebar__user">
-              <div className="avatar avatar-md" style={{ background: 'linear-gradient(135deg,#DC2626,#7F1D1D)', color: '#fff' }}>PA</div>
+              <div className="avatar avatar-md" style={{ background: me.grad, color: '#fff' }}>{me.initials}</div>
               <div className="sidebar__user-info">
-                <div className="sidebar__user-name">Platform Admin</div>
-                <div className="sidebar__user-role">Super Administrator</div>
+                <div className="sidebar__user-name">{me.name}</div>
+                <div className="sidebar__user-role">{me.sub}</div>
               </div>
             </div>
           </div>

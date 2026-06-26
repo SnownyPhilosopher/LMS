@@ -19,6 +19,7 @@ const emptyClass = { title: '', course: '', date: '2026-06-19', time: '10:00', d
 export default function TeacherDashboard() {
   const { state, actions, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.teacher
   const TROUTES = { 'My Courses': '/teacher/courses', Analytics: '/teacher/analytics', 'My Learners': '/teacher/learners', 'Live Classes': '/teacher/classes' }
   const onNav = (name) => (TROUTES[name] ? navigate(TROUTES[name]) : toast(`${name} — demo`, 'info'))
   const [modal, setModal] = useState(null)
@@ -53,7 +54,7 @@ export default function TeacherDashboard() {
           <span className="tc-topbar__name">Soteria Learning</span>
         </Link>
         <div className="tc-topbar__sep" />
-        <span className="tc-topbar__inst">Nexcorp University</span>
+        <span className="tc-topbar__inst">{state.meta.institution}</span>
         <span className="tc-topbar__role">Teacher</span>
         <div className="tc-topbar__spacer" />
         <div className="tc-topbar__search">
@@ -63,7 +64,7 @@ export default function TeacherDashboard() {
         <div className="tc-topbar__actions">
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="KA" grad="linear-gradient(135deg,#047857,#065F46)" title="Dr. Kwame Asiedu" />
+          <AccountMenu />
         </div>
       </header>
 
@@ -83,10 +84,10 @@ export default function TeacherDashboard() {
           <div className="sidebar__spacer" />
           <div className="sidebar__footer">
             <div className="sidebar__user">
-              <div className="avatar avatar-md" style={{ background: 'linear-gradient(135deg,#047857,#065F46)', color: '#fff' }}>KA</div>
+              <div className="avatar avatar-md" style={{ background: me.grad, color: '#fff' }}>{me.initials}</div>
               <div className="sidebar__user-info">
-                <div className="sidebar__user-name">Dr. Kwame Asiedu</div>
-                <div className="sidebar__user-role">Mathematical Sciences</div>
+                <div className="sidebar__user-name">{me.name}</div>
+                <div className="sidebar__user-role">{me.sub}</div>
               </div>
             </div>
           </div>
@@ -96,8 +97,8 @@ export default function TeacherDashboard() {
           <div className="tc-content">
             <div className="tc-page-header">
               <div>
-                <div className="tc-page-header__eyebrow">Mathematical Sciences · Nexcorp University</div>
-                <div className="tc-page-header__title">Good morning, Dr. Asiedu 👋</div>
+                <div className="tc-page-header__eyebrow">{me.sub} · {state.meta.institution}</div>
+                <div className="tc-page-header__title">Good morning, {me.first} 👋</div>
                 <div className="tc-page-header__sub">Thursday, 18 June 2026 · {state.courses.length} courses · 248 learners · 1 class live now</div>
               </div>
               <div className="tc-page-header__actions">

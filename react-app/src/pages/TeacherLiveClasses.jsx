@@ -24,7 +24,7 @@ export default function TeacherLiveClasses() {
     <TeacherLayout active="classes">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Mathematical Sciences · Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.teacher.sub} · {state.meta.institution}</div>
           <div className="page-head__title">Live Classes</div>
           <div className="page-head__sub">{state.classes.length} sessions · {live.length} live now</div>
         </div>

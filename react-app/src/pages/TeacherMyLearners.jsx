@@ -22,7 +22,7 @@ export default function TeacherMyLearners() {
     <TeacherLayout active="learners">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Mathematical Sciences · Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.teacher.sub} · {state.meta.institution}</div>
           <div className="page-head__title">My Learners</div>
           <div className="page-head__sub">248 learners · <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>12 at risk</span></div>
         </div>

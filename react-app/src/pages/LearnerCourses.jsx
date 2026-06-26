@@ -25,7 +25,7 @@ export default function LearnerCourses() {
     <LearnerLayout active="courses">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">BSc Actuarial Science · Year 2</div>
+          <div className="page-head__eyebrow">{state.meta.learner.sub}</div>
           <div className="page-head__title">My Courses</div>
           <div className="page-head__sub">{state.myCourses.length} major courses this semester</div>
         </div>

@@ -28,6 +28,7 @@ const SIDEBAR = [
 export default function TeacherLayout({ active, children }) {
   const { state, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.teacher
   const go = (l) => (l.to ? navigate(l.to) : toast(`${l.name} — demo`, 'info'))
 
   return (
@@ -38,7 +39,7 @@ export default function TeacherLayout({ active, children }) {
           <span className="tc-topbar__name">Soteria Learning</span>
         </Link>
         <div className="tc-topbar__sep" />
-        <span className="tc-topbar__inst">Nexcorp University</span>
+        <span className="tc-topbar__inst">{state.meta.institution}</span>
         <span className="tc-topbar__role">Teacher</span>
         <div className="tc-topbar__spacer" />
         <div className="tc-topbar__search">
@@ -48,7 +49,7 @@ export default function TeacherLayout({ active, children }) {
         <div className="tc-topbar__actions">
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="KA" grad="linear-gradient(135deg,#047857,#065F46)" title="Dr. Kwame Asiedu" />
+          <AccountMenu />
         </div>
       </header>
 
@@ -71,10 +72,10 @@ export default function TeacherLayout({ active, children }) {
           <div className="sidebar__spacer" />
           <div className="sidebar__footer">
             <div className="sidebar__user">
-              <div className="avatar avatar-md" style={{ background: 'linear-gradient(135deg,#047857,#065F46)', color: '#fff' }}>KA</div>
+              <div className="avatar avatar-md" style={{ background: me.grad, color: '#fff' }}>{me.initials}</div>
               <div className="sidebar__user-info">
-                <div className="sidebar__user-name">Dr. Kwame Asiedu</div>
-                <div className="sidebar__user-role">Mathematical Sciences</div>
+                <div className="sidebar__user-name">{me.name}</div>
+                <div className="sidebar__user-role">{me.sub}</div>
               </div>
             </div>
           </div>

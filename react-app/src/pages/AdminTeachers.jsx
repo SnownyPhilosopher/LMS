@@ -20,7 +20,7 @@ export default function AdminTeachers() {
     <AdminLayout active="teachers">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.institution}</div>
           <div className="page-head__title">Teachers</div>
           <div className="page-head__sub">{state.counts.teachers} teachers across 6 departments</div>
         </div>

@@ -13,7 +13,7 @@ const GUARDIANS = [
 ]
 
 export default function AdminGuardians() {
-  const { toast } = useStore()
+  const { state, toast } = useStore()
   const [search, setSearch] = useState('')
 
   const rows = useMemo(() => {
@@ -25,7 +25,7 @@ export default function AdminGuardians() {
     <AdminLayout active="guardians">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.institution}</div>
           <div className="page-head__title">Guardians</div>
           <div className="page-head__sub">342 guardians linked to learner accounts</div>
         </div>

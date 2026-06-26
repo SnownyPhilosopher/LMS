@@ -23,7 +23,7 @@ export default function TeacherCourses() {
     <TeacherLayout active="courses">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Mathematical Sciences · Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.teacher.sub} · {state.meta.institution}</div>
           <div className="page-head__title">My Courses</div>
           <div className="page-head__sub">{state.courses.length} courses · 248 learners</div>
         </div>

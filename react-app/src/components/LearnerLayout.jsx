@@ -26,6 +26,7 @@ const SIDENAV = [
 export default function LearnerLayout({ active, right, children }) {
   const { state, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.learner
   const overall = state.myCourses.length
     ? Math.round(state.myCourses.reduce((a, c) => a + c.pct, 0) / state.myCourses.length) : 0
 
@@ -37,15 +38,15 @@ export default function LearnerLayout({ active, right, children }) {
         <Link to="/login" className="inst-bar__logo">
           <div className="logo-icon"><Icon name="logo" stroke="white" strokeWidth={2.2} /></div>
         </Link>
-        <span className="inst-bar__name">Nexcorp University</span>
+        <span className="inst-bar__name">{state.meta.institution}</span>
         <div className="inst-bar__sep" />
-        <span className="inst-bar__program">BSc In Actuarial Science</span>
+        <span className="inst-bar__program">{me.program}</span>
         <div className="inst-bar__spacer" />
         <div className="inst-bar__actions">
           <button className="topbar-icon-btn" data-tooltip="Help" aria-label="Help" onClick={() => toast('Help centre — demo', 'info')}><Icon name="help" /></button>
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="AA" grad="linear-gradient(135deg,#3B82F6,#6366F1)" title="Amara Asante" />
+          <AccountMenu />
         </div>
       </div>
 
@@ -60,10 +61,10 @@ export default function LearnerLayout({ active, right, children }) {
       <div className="learner-body">
         <aside className="l-sidebar">
           <div className="l-sidebar__user">
-            <Avatar initials="AA" color="blue" size="md" />
+            <Avatar initials={me.initials} color={me.color} size="md" />
             <div>
-              <div className="l-sidebar__uname">Amara Asante</div>
-              <div className="l-sidebar__uid">NXU/ACT/2023/041</div>
+              <div className="l-sidebar__uname">{me.name}</div>
+              <div className="l-sidebar__uid">{me.id}</div>
             </div>
           </div>
 

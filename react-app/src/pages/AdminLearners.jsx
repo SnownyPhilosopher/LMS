@@ -22,7 +22,7 @@ export default function AdminLearners() {
     <AdminLayout active="learners">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.institution}</div>
           <div className="page-head__title">Learners</div>
           <div className="page-head__sub">{state.counts.learners.toLocaleString()} learners enrolled</div>
         </div>

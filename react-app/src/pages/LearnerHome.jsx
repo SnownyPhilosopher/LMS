@@ -42,6 +42,7 @@ function MiniCalendar() {
 export default function LearnerHome() {
   const { state, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.learner
   const LROUTES = { Courses: '/learner/courses', Calendar: '/learner/calendar', Library: '/learner/library', Profile: '/learner/profile' }
   const onNav = (label) => (LROUTES[label] ? navigate(LROUTES[label]) : toast(`${label} — demo`, 'info'))
 
@@ -58,15 +59,15 @@ export default function LearnerHome() {
         <Link to="/login" className="inst-bar__logo">
           <div className="logo-icon"><Icon name="logo" stroke="white" strokeWidth={2.2} /></div>
         </Link>
-        <span className="inst-bar__name">Nexcorp University</span>
+        <span className="inst-bar__name">{state.meta.institution}</span>
         <div className="inst-bar__sep" />
-        <span className="inst-bar__program">BSc In Actuarial Science</span>
+        <span className="inst-bar__program">{me.program}</span>
         <div className="inst-bar__spacer" />
         <div className="inst-bar__actions">
           <button className="topbar-icon-btn" data-tooltip="Help" aria-label="Help" onClick={() => toast('Help centre — demo', 'info')}><Icon name="help" /></button>
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="AA" grad="linear-gradient(135deg,#3B82F6,#6366F1)" title="Amara Asante" />
+          <AccountMenu />
         </div>
       </div>
 
@@ -81,10 +82,10 @@ export default function LearnerHome() {
       <div className="learner-body">
         <aside className="l-sidebar">
           <div className="l-sidebar__user">
-            <Avatar initials="AA" color="blue" size="md" />
+            <Avatar initials={me.initials} color={me.color} size="md" />
             <div>
-              <div className="l-sidebar__uname">Amara Asante</div>
-              <div className="l-sidebar__uid">NXU/ACT/2023/041</div>
+              <div className="l-sidebar__uname">{me.name}</div>
+              <div className="l-sidebar__uid">{me.id}</div>
             </div>
           </div>
 
@@ -116,7 +117,7 @@ export default function LearnerHome() {
           <div className="l-main-content">
             <div className="greeting">
               <div className="greeting__date">Thursday, 18 June 2026</div>
-              <div className="greeting__title">Good morning, Amara 👋</div>
+              <div className="greeting__title">Good morning, {me.first} 👋</div>
               <div className="greeting__sub">You have {dueSoon} upcoming deadlines and a lecture at 10:00 AM today.</div>
             </div>
 

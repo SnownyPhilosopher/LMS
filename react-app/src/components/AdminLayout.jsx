@@ -28,8 +28,9 @@ const SIDEBAR = [
 
 // Shared admin shell: top bar + left sidebar.
 export default function AdminLayout({ active, children }) {
-  const { toast } = useStore()
+  const { state, toast } = useStore()
   const navigate = useNavigate()
+  const me = state.meta.admin
   const go = (l) => (l.to ? navigate(l.to) : toast(`${l.name} — demo`, 'info'))
 
   return (
@@ -40,7 +41,7 @@ export default function AdminLayout({ active, children }) {
           <span className="ad-topbar__name">Soteria Learning</span>
         </Link>
         <div className="ad-topbar__sep" />
-        <span className="ad-topbar__inst">Nexcorp University</span>
+        <span className="ad-topbar__inst">{state.meta.institution}</span>
         <span className="ad-topbar__role">Admin</span>
         <div className="ad-topbar__spacer" />
         <div className="ad-topbar__search">
@@ -50,7 +51,7 @@ export default function AdminLayout({ active, children }) {
         <div className="ad-topbar__actions">
           <NotificationBell />
           <div className="topbar__divider" />
-          <AccountMenu initials="RO" grad="linear-gradient(135deg,#2563EB,#1E3A8A)" title="Rebecca Owusu" />
+          <AccountMenu />
         </div>
       </header>
 
@@ -70,10 +71,10 @@ export default function AdminLayout({ active, children }) {
           <div className="sidebar__spacer" />
           <div className="sidebar__footer">
             <div className="sidebar__user">
-              <div className="avatar avatar-md" style={{ background: 'linear-gradient(135deg,#2563EB,#1E3A8A)', color: '#fff' }}>RO</div>
+              <div className="avatar avatar-md" style={{ background: me.grad, color: '#fff' }}>{me.initials}</div>
               <div className="sidebar__user-info">
-                <div className="sidebar__user-name">Rebecca Owusu</div>
-                <div className="sidebar__user-role">Institution Admin</div>
+                <div className="sidebar__user-name">{me.name}</div>
+                <div className="sidebar__user-role">{me.sub}</div>
               </div>
             </div>
           </div>

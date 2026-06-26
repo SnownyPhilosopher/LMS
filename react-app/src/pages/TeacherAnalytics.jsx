@@ -23,7 +23,7 @@ export default function TeacherAnalytics() {
     <TeacherLayout active="analytics">
       <div className="page-head">
         <div>
-          <div className="page-head__eyebrow">Mathematical Sciences · Nexcorp University</div>
+          <div className="page-head__eyebrow">{state.meta.teacher.sub} · {state.meta.institution}</div>
           <div className="page-head__title">Analytics</div>
           <div className="page-head__sub">Performance across your {courses.length} courses</div>
         </div>
